@@ -147,7 +147,7 @@ export default function GenerateSoalPage() {
           {!loading && !result && <p className="text-slate-500">Upload PDF dan klik Generate</p>}
           {result && (
             <div className="max-h-[500px] overflow-y-auto space-y-4">
-              {(Array.isArray(result.content) ? result.content : []).map((soal: any, i: number) => (
+              {Array.isArray(result.content) ? result.content.map((soal: any, i: number) => (
                 <div key={i} className="p-3 bg-slate-700/30 rounded-lg">
                   <p className="text-sm font-medium text-white mb-2">{i + 1}. {soal.pertanyaan}</p>
                   <div className="grid grid-cols-2 gap-1 text-xs ml-4">
@@ -164,7 +164,11 @@ export default function GenerateSoalPage() {
                     </details>
                   )}
                 </div>
-              ))}
+              )) : (
+                <div className="p-4 bg-slate-700/30 rounded-lg">
+                  <p className="text-sm text-slate-300 whitespace-pre-wrap">{typeof result.content === 'string' ? result.content : result.content?.raw || JSON.stringify(result.content, null, 2)}</p>
+                </div>
+              )}
               <div className="pt-3 border-t border-slate-700">
                 <button onClick={() => downloadDoc(result.id, 'docx')}
                   className="text-sm text-indigo-400 hover:underline mr-4">Download DOCX</button>
