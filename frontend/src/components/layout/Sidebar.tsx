@@ -8,6 +8,7 @@ const menuItems = [
   { href: '/dashboard', label: 'Dashboard', icon: '📊' },
   { href: '/dashboard/modul', label: 'Generate Modul', icon: '📖' },
   { href: '/dashboard/lkpd', label: 'Generate LKPD', icon: '📝' },
+  { href: '/dashboard/soal', label: 'Generate Soal (PDF)', icon: '📄' },
   { href: '/dashboard/documents', label: 'Dokumen', icon: '📁' },
   { href: '/dashboard/exams', label: 'Ujian Online', icon: '📋' },
 ];

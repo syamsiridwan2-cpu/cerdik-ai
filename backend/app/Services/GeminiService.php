@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Log;
 class GeminiService
 {
     protected string $apiKey;
-    protected string $endpoint = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
+    protected string $endpoint = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent';
 
     public function __construct()
     {
@@ -67,38 +67,71 @@ class GeminiService
 
     protected function buildModulPrompt(string $materi, string $kelas, string $mapel, string $semester): string
     {
+        $jenjang = $kelas <= 6 ? 'SD' : ($kelas <= 9 ? 'SMP' : 'SMA/SMK');
+        $alokasi = $jenjang === 'SD' ? '2 JP x 35 Menit' : ($jenjang === 'SMP' ? '2 JP x 40 Menit' : '2 JP x 45 Menit');
         return <<<PROMPT
-Buatkan Modul Ajar Kurikulum Merdeka lengkap dengan format berikut:
-
-**Informasi Umum**
+Buatkan Modul Ajar Kurikulum Merdeka dengan pendekatan Deep Learning (Pembelajaran Mendalam) untuk:
 - Mata Pelajaran: {$mapel}
 - Kelas/Semester: {$kelas}/{$semester}
+- Jenjang: {$jenjang}
 - Materi: {$materi}
-- Alokasi Waktu: 2 JP x 45 Menit
+- Alokasi Waktu: {$alokasi}
 
-**Tujuan Pembelajaran**
-- [tulis 3-4 tujuan]
+Gunakan format template berikut dan output dalam JSON:
 
-**Kegiatan Pembelajaran**
-1. Pendahuluan (10 menit)
-2. Kegiatan Inti (60 menit)
-   - Eksplorasi
-   - Elaborasi
-   - Konfirmasi
-3. Penutup (20 menit)
+{
+  "identifikasi": {
+    "peserta_didik": "Identifikasi kesiapan peserta didik (pengetahuan awal, minat, latar belakang, kebutuhan belajar)",
+    "materi_pelajaran": "Analisis materi: jenis pengetahuan, relevansi dg kehidupan nyata, tingkat kesulitan, integrasi nilai karakter",
+    "dimensi_profil_lulusan": "Dimensi Profil Pelajar Pancasila yang dicapai (contoh: Beriman, Berkebinekaan Global, Gotong Royong, Mandiri, Bernalar Kritis, Kreatif)"
+  },
+  "desain_pembelajaran": {
+    "capaian_pembelajaran": "CP sesuai fase {$jenjang}",
+    "lintas_displin_ilmu": "Disiplin ilmu/mata pelajaran relevan",
+    "tujuan_pembelajaran": ["Tujuan 1: ...", "Tujuan 2: ...", "Tujuan 3: ...", "Tujuan 4: ..."],
+    "topik_pembelajaran": "Topik: {$materi}",
+    "praktik_pedagogis": "Model/Strategi/Metode (contoh: PBL, Inkuiri, Kontekstual, dll)",
+    "kemitraan_pembelajaran": "Mitra kolaborasi (guru lain, orang tua, komunitas, dll)",
+    "lingkungan_pembelajaran": "Lingkungan fisik, virtual, dan budaya belajar",
+    "pemanfaatan_digital": "Teknologi digital yang digunakan (LMS, perpus digital, dll)"
+  },
+  "pengalaman_belajar": {
+    "awal": {
+      "prinsip": "tulis prinsip: berkesadaran/bermakna/menggembirakan",
+      "kegiatan": "Orientasi bermakna, apersepsi kontekstual, motivasi menggembirakan",
+      "durasi": "10 menit"
+    },
+    "inti": {
+      "memahami": {
+        "prinsip": "tulis prinsip: berkesadaran/bermakna/menggembirakan",
+        "kegiatan": ["Kegiatan 1", "Kegiatan 2"]
+      },
+      "mengaplikasi": {
+        "prinsip": "tulis prinsip: berkesadaran/bermakna/menggembirakan",
+        "kegiatan": ["Kegiatan 1", "Kegiatan 2"]
+      },
+      "merefleksi": {
+        "prinsip": "tulis prinsip: berkesadaran/bermakna/menggembirakan",
+        "kegiatan": ["Kegiatan 1", "Kegiatan 2"]
+      },
+      "durasi": "60 menit"
+    },
+    "penutup": {
+      "prinsip": "tulis prinsip: berkesadaran/bermakna/menggembirakan",
+      "kegiatan": "Umpan balik konstruktif, menyimpulkan, rencana pembelajaran selanjutnya",
+      "durasi": "15 menit"
+    }
+  },
+  "asesmen": {
+    "awal": "Asesmen diagnostik/awal pembelajaran",
+    "proses": "Asesmen formatif selama proses (observasi, kinerja, proyek, dll)",
+    "akhir": "Asesmen sumatif akhir pembelajaran"
+  },
+  "media_alat_bahan": ["Media 1", "Alat 1", "Bahan 1"],
+  "sumber_belajar": ["Sumber 1", "Sumber 2"]
+}
 
-**Asesmen**
-- Sikap: observasi
-- Pengetahuan: tes tulis
-- Keterampilan: unjuk kerja
-
-**Media/Alat/Bahan**
-- [sebutkan media yang relevan]
-
-**Sumber Belajar**
-- [sebutkan sumber]
-
-Gunakan bahasa Indonesia yang baik dan benar. Format output dalam JSON dengan struktur: { "informasi_umum": {...}, "tujuan_pembelajaran": [...], "kegiatan": { "pendahuluan": "...", "inti": "...", "penutup": "..." }, "asesmen": {...}, "media": [...], "sumber": [...] }
+Isi setiap field dengan konten yang spesifik, relevan, dan sesuai dengan materi {$materi}, kelas {$kelas}, mapel {$mapel}. Gunakan bahasa Indonesia. Output hanya JSON tanpa markdown.
 PROMPT;
     }
 

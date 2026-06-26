@@ -2,6 +2,20 @@
 
 import { useState, useEffect } from 'react';
 import api from '@/lib/api';
+import toast from 'react-hot-toast';
+
+const downloadDoc = async (id: number, ext: string) => {
+  const token = localStorage.getItem('token');
+  const res = await fetch(`/api/documents/${id}/export-${ext}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) return toast.error('Gagal download');
+  const blob = await res.blob();
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = `dokumen.${ext}`; a.click();
+  URL.revokeObjectURL(url);
+};
 
 interface Doc {
   id: number;
@@ -71,10 +85,10 @@ export default function DocumentsPage() {
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                <a href={`${process.env.NEXT_PUBLIC_API_URL}/documents/${doc.id}/export-docx`}
-                  className="px-3 py-1.5 text-xs bg-indigo-600/20 text-indigo-400 rounded-lg hover:bg-indigo-600/30 transition-colors">DOCX</a>
-                <a href={`${process.env.NEXT_PUBLIC_API_URL}/documents/${doc.id}/export-pdf`}
-                  className="px-3 py-1.5 text-xs bg-red-600/20 text-red-400 rounded-lg hover:bg-red-600/30 transition-colors">PDF</a>
+                <button onClick={() => downloadDoc(doc.id, 'docx')}
+                  className="px-3 py-1.5 text-xs bg-indigo-600/20 text-indigo-400 rounded-lg hover:bg-indigo-600/30 transition-colors">DOCX</button>
+                <button onClick={() => downloadDoc(doc.id, 'pdf')}
+                  className="px-3 py-1.5 text-xs bg-red-600/20 text-red-400 rounded-lg hover:bg-red-600/30 transition-colors">PDF</button>
                 <button onClick={() => handleDelete(doc.id)}
                   className="px-3 py-1.5 text-xs bg-slate-700 text-slate-400 rounded-lg hover:bg-red-600/30 hover:text-red-400 transition-colors">Hapus</button>
               </div>

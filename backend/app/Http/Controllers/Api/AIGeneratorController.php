@@ -51,7 +51,7 @@ class AIGeneratorController extends Controller
                 'type' => 'modul',
                 'title' => "Modul Ajar - {$validated['materi']}",
                 'content' => $result,
-                'ai_model' => 'gemini-2.0-flash',
+                'ai_model' => 'gemini-2.5-flash',
                 'poin_cost' => $this->poin->getCost('generate_modul'),
                 'metadata' => [
                     'materi' => $validated['materi'],
@@ -97,7 +97,7 @@ class AIGeneratorController extends Controller
                 'type' => 'lkpd',
                 'title' => "LKPD - {$validated['materi']}",
                 'content' => $result,
-                'ai_model' => 'gemini-2.0-flash',
+                'ai_model' => 'gemini-2.5-flash',
                 'poin_cost' => $this->poin->getCost('generate_lkpd'),
                 'metadata' => [
                     'materi' => $validated['materi'],
@@ -113,7 +113,7 @@ class AIGeneratorController extends Controller
     public function generateFromPdf(Request $request)
     {
         $validated = $request->validate([
-            'file' => 'required|file|mimes:pdf|max:20480',
+            'file' => 'required|file|mimetypes:application/pdf,text/plain|max:20480',
             'jumlah_soal' => 'required|integer|min:1|max:20',
             'jenis' => 'required|in:pilihan ganda',
         ]);
@@ -153,7 +153,7 @@ class AIGeneratorController extends Controller
                 'type' => 'soal',
                 'title' => "Soal dari PDF - " . $request->file('file')->getClientOriginalName(),
                 'content' => $result,
-                'ai_model' => 'gemini-2.0-flash',
+                'ai_model' => 'gemini-2.5-flash',
                 'poin_cost' => $this->poin->getCost('generate_soal'),
                 'metadata' => [
                     'jumlah_soal' => $validated['jumlah_soal'],

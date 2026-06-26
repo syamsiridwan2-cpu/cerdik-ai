@@ -4,6 +4,19 @@ import { useState } from 'react';
 import api from '@/lib/api';
 import toast from 'react-hot-toast';
 
+const downloadDoc = async (id: number, ext: string) => {
+  const token = localStorage.getItem('token');
+  const res = await fetch(`/api/documents/${id}/export-${ext}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) return toast.error('Gagal download');
+  const blob = await res.blob();
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = `dokumen.${ext}`; a.click();
+  URL.revokeObjectURL(url);
+};
+
 export default function GenerateModulPage() {
   const [form, setForm] = useState({ materi: '', kelas: '', mapel: '', semester: '1' });
   const [loading, setLoading] = useState(false);
@@ -45,7 +58,7 @@ export default function GenerateModulPage() {
               <label className="block text-sm text-slate-400 mb-1">Kelas</label>
               <select value={form.kelas} onChange={(e) => setForm({ ...form, kelas: e.target.value })} required
                 className="w-full px-4 py-2.5 bg-slate-900 border border-slate-600 rounded-lg text-white focus:outline-none focus:border-indigo-500">
-                {[10, 11, 12].map((k) => <option key={k} value={k}>Kelas {k}</option>)}
+                {[1,2,3,4,5,6,7,8,9,10,11,12].map((k) => <option key={k} value={k}>Kelas {k}</option>)}
               </select>
             </div>
             <div>
@@ -84,10 +97,10 @@ export default function GenerateModulPage() {
                 </div>
               ))}
               <div className="pt-3 border-t border-slate-700">
-                <a href={`${process.env.NEXT_PUBLIC_API_URL}/documents/${result.id}/export-docx`}
-                  className="text-sm text-indigo-400 hover:underline mr-4">Download DOCX</a>
-                <a href={`${process.env.NEXT_PUBLIC_API_URL}/documents/${result.id}/export-pdf`}
-                  className="text-sm text-indigo-400 hover:underline">Download PDF</a>
+                <button onClick={() => downloadDoc(result.id, 'docx')}
+                  className="text-sm text-indigo-400 hover:underline mr-4">Download DOCX</button>
+                <button onClick={() => downloadDoc(result.id, 'pdf')}
+                  className="text-sm text-indigo-400 hover:underline">Download PDF</button>
               </div>
             </div>
           )}
