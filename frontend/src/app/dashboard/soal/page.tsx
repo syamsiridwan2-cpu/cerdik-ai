@@ -114,7 +114,13 @@ export default function GenerateSoalPage() {
       <div className="grid md:grid-cols-2 gap-6">
         <form onSubmit={handleSubmit} className="bg-slate-800/50 rounded-xl p-6 border border-slate-700 space-y-4">
           <div>
-            <label className="block text-sm text-slate-400 mb-1">Upload File PDF</label>
+            <div className="flex items-center gap-2 mb-1">
+              <label className="block text-sm text-slate-400">Upload File PDF</label>
+              <button type="button" onClick={() => setShowRules(true)}
+                className="text-xs text-indigo-400 hover:text-indigo-300 underline underline-offset-2">
+                Syarat PDF
+              </button>
+            </div>
             <input ref={fileRef} type="file" accept=".pdf" onChange={(e) => {
               const f = e.target.files?.[0] || null;
               if (f && !validateFile(f)) return;
