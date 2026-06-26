@@ -1,0 +1,26 @@
+# Backend
+backend/vendor/
+backend/.env
+backend/storage/app/public/documents/*
+!backend/storage/app/public/documents/.gitkeep
+backend/storage/framework/cache/*
+backend/storage/framework/sessions/*
+backend/storage/framework/views/*
+backend/storage/logs/*
+backend/database/database.sqlite
+backend/node_modules/
+
+# Frontend
+frontend/.next/
+frontend/node_modules/
+frontend/.env.local
+frontend/out/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
