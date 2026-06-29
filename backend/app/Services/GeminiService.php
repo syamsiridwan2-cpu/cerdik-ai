@@ -219,7 +219,7 @@ FORMAT OUTPUT - Keluarkan HANYA JSON valid tanpa markdown:
         $instansi = $instansi ?: "SDN ...";
         $nama_penyusun = $nama_penyusun ?: '…………………';
 
-        return "Anda adalah guru profesional Indonesia. Buatlah MODUL AJAR KURIKULUM MERDEKA (TINGKAT SD) untuk:
+        return "Anda adalah guru profesional Indonesia. Buatlah MODUL AJAR KURIKULUM MERDEKA SD untuk:
 - Mata Pelajaran: {$mapel}
 - Kelas: {$kelas} SD
 - Semester: {$semester}
@@ -231,76 +231,123 @@ FORMAT OUTPUT - Keluarkan HANYA JSON valid tanpa markdown:
 - Tahun Pelajaran: {$tahun_pelajaran}
 
 Buat konten yang DETAIL, PANJANG, dan LENGKAP sesuai format berikut.
-
 Keluarkan HANYA JSON valid tanpa markdown, dengan struktur:
 
 {
-  \"informasi_umum\": {
-    \"nama_penyusun\": \"{$nama_penyusun}\",
-    \"instansi\": \"{$instansi}\",
-    \"tahun_penyusunan\": \"...\",
-    \"jenjang_sekolah\": \"Sekolah Dasar (SD)\",
-    \"mata_pelajaran\": \"{$mapel}\",
-    \"fase_kelas\": \"Fase {$fase} / Kelas {$kelas}\",
-    \"bab_tema\": \"{$materi}\",
-    \"alokasi_waktu\": \"{$alokasi_waktu}\"
-  },
-  \"profil_pelajar_pancasila\": {
-    \"deskripsi\": \"... (deskripsi profil yang dipilih) ...\",
-    \"pilihan\": [
-      { \"label\": \"Beriman, bertakwa kepada Tuhan YME, dan berakhlak mulia\", \"terpilih\": true, \"sub_elemen\": \"...\" },
-      { \"label\": \"Berkebinekaan global\", \"terpilih\": false, \"sub_elemen\": \"\" },
-      { \"label\": \"Gotong royong\", \"terpilih\": true, \"sub_elemen\": \"...\" },
-      { \"label\": \"Mandiri\", \"terpilih\": false, \"sub_elemen\": \"\" },
-      { \"label\": \"Bernalar kritis\", \"terpilih\": true, \"sub_elemen\": \"...\" },
-      { \"label\": \"Kreatif\", \"terpilih\": false, \"sub_elemen\": \"\" }
-    ]
-  },
-  \"sarana_prasarana\": {
-    \"media_pembelajaran\": [ \"Laptop\", \"Proyektor\", \"...\" ],
-    \"sumber_belajar\": [ \"Buku Siswa Kemendikbudristek Kelas {$kelas}\", \"...\" ]
-  },
-  \"target_peserta_didik\": {
-    \"reguler\": true,
-    \"pencapaian_tinggi\": false,
-    \"kesulitan_belajar\": false
-  },
-  \"model_metode\": {
-    \"model_pembelajaran\": \"...\",
-    \"metode\": [ \"...\", \"...\" ]
-  },
-  \"capaian_pembelajaran\": {
+  \"identitas\": {
+    \"nama_sekolah\": \"{$instansi}\",
+    \"tahun_pelajaran\": \"{$tahun_pelajaran}\",
+    \"semester\": \"{$semester}\",
     \"fase\": \"{$fase}\",
-    \"cp_text\": \"... (teks Capaian Pembelajaran resmi) ...\"
+    \"kelas\": \"{$kelas}\",
+    \"mata_pelajaran\": \"{$mapel}\",
+    \"bab_topik\": \"{$materi}\",
+    \"alokasi_waktu\": \"{$alokasi_waktu}\",
+    \"penyusun\": \"{$nama_penyusun}\"
   },
-  \"tujuan_pembelajaran\": [ \"...\", \"...\" ],
-  \"pemahaman_bermakna\": [ \"...\", \"...\" ],
-  \"pertanyaan_pemantik\": [ \"...\", \"...\" ],
+  \"cp\": \"...(Capaian Pembelajaran resmi)...\",
+  \"tp\": [ \"1. ...\", \"2. ...\", \"3. ...\" ],
+  \"indikator_ketercapaian\": [ \"...\", \"...\", \"...\" ],
+  \"profil_lulusan\": [ \"...\", \"...\", \"...\" ],
+  \"dimensi_ppp\": [ \"...\", \"...\", \"...\" ],
+  \"kompetensi_awal\": \"...\",
+  \"sarana_prasarana\": [ \"...\", \"...\" ],
+  \"target_peserta_didik\": \"...\",
+  \"model_pembelajaran\": \"...\",
+  \"pendekatan\": \"...\",
+  \"metode\": [ \"...\", \"...\", \"...\" ],
+  \"materi_inti\": \"...\",
+  \"materi_pendukung\": \"...\",
+  \"istilah_penting\": [ {\"istilah\": \"...\", \"penjelasan\": \"...\"} ],
+  \"pemahaman_bermakna\": [ \"...\" ],
+  \"pertanyaan_pemantik\": [ \"1. ...\", \"2. ...\", \"3. ...\" ],
   \"kegiatan_pembelajaran\": [
     {
       \"pertemuan\": \"Pertemuan 1\",
-      \"pendahuluan\": \"...(15 Menit)...\\n1. ...\\n2. ...\\n3. ...\",
-      \"inti\": \"...(60 Menit)...\\nLangkah 1: ...\\nLangkah 2: ...\\nLangkah 3: ...\",
-      \"penutup\": \"...(15 Menit)...\\n1. ...\\n2. ...\"
+      \"pendahuluan\": \"...\\n- ...\\n- ...\",
+      \"inti\": \"...\\n- ...\\n- ...\",
+      \"penutup\": \"...\\n- ...\\n- ...\"
+    },
+    {
+      \"pertemuan\": \"Pertemuan 2\",
+      \"pendahuluan\": \"...\",
+      \"inti\": \"...\",
+      \"penutup\": \"...\"
+    },
+    {
+      \"pertemuan\": \"Pertemuan 3\",
+      \"pendahuluan\": \"...\",
+      \"inti\": \"...\",
+      \"penutup\": \"...\"
     }
   ],
-  \"asesmen\": {
-    \"jenis\": [ \"Asesmen Individu\", \"Asesmen Kelompok\" ],
-    \"teknik\": [ \"Tertulis\", \"Unjuk Kerja\", \"Produk\", \"Observasi\" ]
+  \"asesmen_diagnostik\": {
+    \"kognitif\": \"...\",
+    \"non_kognitif\": \"...\"
   },
-  \"pengayaan_remedial\": {
-    \"pengayaan\": \"...\",
-    \"remedial\": \"...\"
+  \"asesmen_formatif\": {
+    \"teknik\": \"...\",
+    \"instrumen\": \"...\",
+    \"rubrik\": \"...\"
   },
-  \"refleksi\": {
-    \"guru\": [ \"...\", \"...\" ],
-    \"peserta_didik\": [ \"...\", \"...\" ]
+  \"asesmen_sumatif\": {
+    \"bentuk\": \"...\",
+    \"instrumen\": \"...\",
+    \"rubrik\": \"...\"
+  },
+  \"rubrik_penilaian\": [ {\"aspek\": \"...\", \"sangat_baik\": \"...\", \"baik\": \"...\", \"cukup\": \"...\", \"perlu_bimbingan\": \"...\"} ],
+  \"penilaian_sikap\": [ {\"aspek\": \"...\", \"kriteria\": \"...\", \"catatan\": \"...\"} ],
+  \"penilaian_pengetahuan\": [ {\"no\": 1, \"indikator\": \"...\", \"bentuk_soal\": \"...\", \"skor\": \"...\"} ],
+  \"penilaian_keterampilan\": [ {\"aspek\": \"...\", \"indikator\": \"...\", \"skor_maksimal\": \"...\"} ],
+  \"pengayaan\": \"...\",
+  \"remedial\": \"...\",
+  \"refleksi_guru\": {
+    \"berjalan_baik\": \"...\",
+    \"perlu_diperbaiki\": \"...\",
+    \"tindak_lanjut\": \"...\"
+  },
+  \"refleksi_peserta_didik\": {
+    \"dipelajari\": \"...\",
+    \"disukai\": \"...\",
+    \"sulit\": \"...\",
+    \"selanjutnya\": \"...\"
   },
   \"lampiran\": {
-    \"lkpd\": \"...\",
-    \"bahan_bacaan\": \"...\",
-    \"glosarium\": [ {\"istilah\": \"...\", \"definisi\": \"...\"} ],
+    \"lkpd\": {
+      \"identitas\": {\"nama\": \"...\", \"kelas\": \"...\", \"tanggal\": \"...\"},
+      \"petunjuk\": \"...\",
+      \"tujuan\": \"...\",
+      \"langkah_kerja\": [ \"1. ...\", \"2. ...\", \"3. ...\" ],
+      \"hasil\": \"...\"
+    },
+    \"bahan_bacaan_guru\": \"...\",
+    \"bahan_bacaan_peserta\": \"...\",
+    \"glosarium\": [ {\"istilah\": \"...\", \"arti\": \"...\"} ],
     \"daftar_pustaka\": [ \"...\", \"...\" ]
+  },
+  \"metadata\": {
+    \"kode_modul\": \"...\",
+    \"versi\": \"1.0\",
+    \"tanggal_dibuat\": \"...\",
+    \"tanggal_revisi\": \"...\",
+    \"status\": \"Draft\",
+    \"penulis\": \"{$nama_penyusun}\",
+    \"validator\": \"...\"
+  },
+  \"checklist\": {
+    \"identitas_lengkap\": false,
+    \"cp_terisi\": false,
+    \"tp_sesuai_cp\": false,
+    \"materi_lengkap\": false,
+    \"kegiatan_lengkap\": false,
+    \"asesmen_tersedia\": false,
+    \"rubrik_tersedia\": false,
+    \"pengayaan_tersedia\": false,
+    \"remedial_tersedia\": false,
+    \"refleksi_guru_tersedia\": false,
+    \"refleksi_siswa_tersedia\": false,
+    \"lkpd_tersedia\": false,
+    \"daftar_pustaka_tersedia\": false
   }
 }";
     }

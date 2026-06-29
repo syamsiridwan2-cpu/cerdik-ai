@@ -644,23 +644,23 @@ class DocumentExportService
         $font = ['name' => 'Times New Roman', 'size' => 11];
         $bold = ['name' => 'Times New Roman', 'size' => 11, 'bold' => true];
         $boldCenter = ['name' => 'Times New Roman', 'size' => 13, 'bold' => true, 'align' => 'center'];
-        $center = ['align' => 'center'];
 
-        $section->addText('MODUL AJAR KURIKULUM MERDEKA (TINGKAT SD)', $boldCenter);
+        $section->addText('MODUL AJAR SD', $boldCenter);
         $section->addTextBreak();
 
-        // I. Informasi Umum
-        $section->addText('I. INFORMASI UMUM', $bold);
-        $iu = $c['informasi_umum'] ?? [];
+        // IDENTITAS MODUL
+        $section->addText('IDENTITAS MODUL', $bold);
+        $id = $c['identitas'] ?? [];
         $fields = [
-            'Nama Penyusun' => $iu['nama_penyusun'] ?? '',
-            'Nama Instansi' => $iu['instansi'] ?? '',
-            'Tahun Penyusunan' => $iu['tahun_penyusunan'] ?? '',
-            'Jenjang Sekolah' => $iu['jenjang_sekolah'] ?? '',
-            'Mata Pelajaran' => $iu['mata_pelajaran'] ?? '',
-            'Fase / Kelas' => $iu['fase_kelas'] ?? '',
-            'Bab / Tema' => $iu['bab_tema'] ?? '',
-            'Alokasi Waktu' => $iu['alokasi_waktu'] ?? '',
+            'Nama Sekolah' => $id['nama_sekolah'] ?? '',
+            'Tahun Pelajaran' => $id['tahun_pelajaran'] ?? '',
+            'Semester' => $id['semester'] ?? '',
+            'Fase' => $id['fase'] ?? '',
+            'Kelas' => $id['kelas'] ?? '',
+            'Mata Pelajaran' => $id['mata_pelajaran'] ?? '',
+            'Bab/Topik' => $id['bab_topik'] ?? '',
+            'Alokasi Waktu' => $id['alokasi_waktu'] ?? '',
+            'Penyusun' => $id['penyusun'] ?? '',
         ];
         $table = $section->addTable(['borderSize' => 6, 'cellMargin' => 40]);
         foreach ($fields as $label => $val) {
@@ -670,241 +670,336 @@ class DocumentExportService
         }
         $section->addTextBreak();
 
-        // A. Profil Pelajar Pancasila
-        $ppp = $c['profil_pelajar_pancasila'] ?? [];
-        $section->addText('A. Profil Pelajar Pancasila', $bold);
-        if (isset($ppp['pilihan']) && is_array($ppp['pilihan'])) {
-            foreach ($ppp['pilihan'] as $p) {
-                $check = $p['terpilih'] ?? false ? '[x]' : '[ ]';
-                $sub = ($p['terpilih'] ?? false) && !empty($p['sub_elemen']) ? ' — ' . $p['sub_elemen'] : '';
-                $section->addText("{$check} {$p['label']}{$sub}", $font);
+        // INFORMASI UMUM
+        $section->addText('INFORMASI UMUM', $bold);
+        $section->addText('Capaian Pembelajaran (CP)', $bold);
+        $section->addText($c['cp'] ?? '-', $font);
+        $section->addTextBreak(0.5);
+        $section->addText('Tujuan Pembelajaran (TP)', $bold);
+        $this->addList($section, $c['tp'] ?? [], $font);
+        $section->addText('Indikator Ketercapaian', $bold);
+        $this->addList($section, $c['indikator_ketercapaian'] ?? [], $font);
+        $section->addText('Profil Lulusan', $bold);
+        $this->addList($section, $c['profil_lulusan'] ?? [], $font);
+        $section->addText('Dimensi Profil Pelajar Pancasila', $bold);
+        $this->addList($section, $c['dimensi_ppp'] ?? [], $font);
+        $section->addText('Kompetensi Awal: ' . ($c['kompetensi_awal'] ?? '-'), $font);
+        $section->addText('Sarana dan Prasarana: ' . (is_array($c['sarana_prasarana'] ?? '') ? implode(', ', $c['sarana_prasarana']) : ($c['sarana_prasarana'] ?? '-')), $font);
+        $section->addText('Target Peserta Didik: ' . ($c['target_peserta_didik'] ?? '-'), $font);
+        $section->addText('Model Pembelajaran: ' . ($c['model_pembelajaran'] ?? '-'), $font);
+        $section->addText('Pendekatan: ' . ($c['pendekatan'] ?? '-'), $font);
+        $section->addText('Metode: ' . (is_array($c['metode'] ?? '') ? implode(', ', $c['metode']) : ($c['metode'] ?? '-')), $font);
+        $section->addTextBreak();
+
+        // MATERI PEMBELAJARAN
+        $section->addText('MATERI PEMBELAJARAN', $bold);
+        $section->addText('Materi Inti: ' . ($c['materi_inti'] ?? '-'), $font);
+        $section->addText('Materi Pendukung: ' . ($c['materi_pendukung'] ?? '-'), $font);
+        if (!empty($c['istilah_penting'])) {
+            $section->addText('Istilah Penting', $bold);
+            $tbl = $section->addTable(['borderSize' => 6, 'cellMargin' => 40]);
+            $tbl->addRow(); $tbl->addCell(4000)->addText('Istilah', $bold); $tbl->addCell(8000)->addText('Penjelasan', $bold);
+            foreach ($c['istilah_penting'] as $ip) {
+                $tbl->addRow(); $tbl->addCell(4000)->addText($ip['istilah'] ?? '', $font); $tbl->addCell(8000)->addText($ip['penjelasan'] ?? '', $font);
             }
         }
         $section->addTextBreak();
 
-        // B. Sarana dan Prasarana
-        $sp = $c['sarana_prasarana'] ?? [];
-        $section->addText('B. Sarana dan Prasarana', $bold);
-        $section->addText('Media Pembelajaran: ' . (is_array($sp['media_pembelajaran'] ?? '') ? implode(', ', $sp['media_pembelajaran']) : ($sp['media_pembelajaran'] ?? '')), $font);
-        $section->addText('Sumber Belajar: ' . (is_array($sp['sumber_belajar'] ?? '') ? implode(', ', $sp['sumber_belajar']) : ($sp['sumber_belajar'] ?? '')), $font);
+        // PEMAHAMAN BERMAKNA
+        $section->addText('PEMAHAMAN BERMAKNA', $bold);
+        $this->addList($section, $c['pemahaman_bermakna'] ?? [], $font);
         $section->addTextBreak();
 
-        // C. Target Peserta Didik
-        $tp = $c['target_peserta_didik'] ?? [];
-        $section->addText('C. Target Peserta Didik', $bold);
-        $section->addText(($tp['reguler'] ?? false ? '[x]' : '[ ]') . ' Peserta didik reguler/tipikal (umum)', $font);
-        $section->addText(($tp['pencapaian_tinggi'] ?? false ? '[x]' : '[ ]') . ' Peserta didik dengan pencapaian tinggi', $font);
-        $section->addText(($tp['kesulitan_belajar'] ?? false ? '[x]' : '[ ]') . ' Peserta didik dengan kesulitan belajar', $font);
+        // PERTANYAAN PEMANTIK
+        $section->addText('PERTANYAAN PEMANTIK', $bold);
+        $this->addList($section, $c['pertanyaan_pemantik'] ?? [], $font);
         $section->addTextBreak();
 
-        // D. Model & Metode
-        $mm = $c['model_metode'] ?? [];
-        $section->addText('D. Model & Metode Pembelajaran', $bold);
-        $section->addText('Model Pembelajaran: ' . ($mm['model_pembelajaran'] ?? '-'), $font);
-        $section->addText('Metode: ' . (is_array($mm['metode'] ?? '') ? implode(', ', $mm['metode']) : ($mm['metode'] ?? '')), $font);
-        $section->addTextBreak();
-
-        // II. Komponen Inti
-        $section->addText('II. KOMPONEN INTI', $bold);
-        $section->addTextBreak();
-
-        // A. Capaian Pembelajaran
-        $cp = $c['capaian_pembelajaran'] ?? [];
-        $section->addText('A. Capaian Pembelajaran (CP)', $bold);
-        $section->addText($cp['cp_text'] ?? '', $font);
-        $section->addTextBreak();
-
-        // Tujuan Pembelajaran
-        $section->addText('B. Tujuan Pembelajaran', $bold);
-        if (isset($c['tujuan_pembelajaran']) && is_array($c['tujuan_pembelajaran'])) {
-            foreach ($c['tujuan_pembelajaran'] as $t) {
-                $section->addText('- ' . $t, $font);
+        // KEGIATAN PEMBELAJARAN
+        $section->addText('KEGIATAN PEMBELAJARAN', $bold);
+        if (!empty($c['kegiatan_pembelajaran'])) {
+            foreach ($c['kegiatan_pembelajaran'] as $kp) {
+                $section->addText($kp['pertemuan'] ?? 'Pertemuan', $bold);
+                $section->addText('Pendahuluan:', $bold);
+                $section->addText($kp['pendahuluan'] ?? '-', $font);
+                $section->addText('Kegiatan Inti:', $bold);
+                $section->addText($kp['inti'] ?? '-', $font);
+                $section->addText('Penutup:', $bold);
+                $section->addText($kp['penutup'] ?? '-', $font);
             }
         }
         $section->addTextBreak();
 
-        // Pemahaman Bermakna
-        if (isset($c['pemahaman_bermakna'])) {
-            $section->addText('C. Pemahaman Bermakna', $bold);
-            $items = is_array($c['pemahaman_bermakna']) ? $c['pemahaman_bermakna'] : [$c['pemahaman_bermakna']];
-            foreach ($items as $t) { $section->addText('- ' . $t, $font); }
-            $section->addTextBreak();
+        // ASESMEN
+        $section->addText('ASESMEN', $bold);
+        if (!empty($c['asesmen_diagnostik'])) {
+            $section->addText('Asesmen Diagnostik', $bold);
+            $section->addText('Kognitif: ' . ($c['asesmen_diagnostik']['kognitif'] ?? '-'), $font);
+            $section->addText('Non-Kognitif: ' . ($c['asesmen_diagnostik']['non_kognitif'] ?? '-'), $font);
         }
-
-        // Pertanyaan Pemantik
-        if (isset($c['pertanyaan_pemantik'])) {
-            $section->addText('D. Pertanyaan Pemantik', $bold);
-            $items = is_array($c['pertanyaan_pemantik']) ? $c['pertanyaan_pemantik'] : [$c['pertanyaan_pemantik']];
-            foreach ($items as $t) { $section->addText('- ' . $t, $font); }
-            $section->addTextBreak();
+        if (!empty($c['asesmen_formatif'])) {
+            $section->addText('Asesmen Formatif', $bold);
+            $section->addText('Teknik: ' . ($c['asesmen_formatif']['teknik'] ?? '-'), $font);
+            $section->addText('Instrumen: ' . ($c['asesmen_formatif']['instrumen'] ?? '-'), $font);
+            $section->addText('Rubrik: ' . ($c['asesmen_formatif']['rubrik'] ?? '-'), $font);
         }
+        if (!empty($c['asesmen_sumatif'])) {
+            $section->addText('Asesmen Sumatif', $bold);
+            $section->addText('Bentuk: ' . ($c['asesmen_sumatif']['bentuk'] ?? '-'), $font);
+            $section->addText('Instrumen: ' . ($c['asesmen_sumatif']['instrumen'] ?? '-'), $font);
+            $section->addText('Rubrik: ' . ($c['asesmen_sumatif']['rubrik'] ?? '-'), $font);
+        }
+        $section->addTextBreak();
 
-        // Kegiatan Pembelajaran
-        if (isset($c['kegiatan_pembelajaran']) && is_array($c['kegiatan_pembelajaran'])) {
-            $section->addText('E. Kegiatan Pembelajaran', $bold);
-            foreach ($c['kegiatan_pembelajaran'] as $k) {
-                $section->addText($k['pertemuan'] ?? '', $bold);
-                if (!empty($k['pendahuluan'])) { $section->addText('Pendahuluan: ' . $k['pendahuluan'], $font); }
-                if (!empty($k['inti'])) { $section->addText('Kegiatan Inti: ' . $k['inti'], $font); }
-                if (!empty($k['penutup'])) { $section->addText('Penutup: ' . $k['penutup'], $font); }
+        // Rubrik Penilaian
+        if (!empty($c['rubrik_penilaian'])) {
+            $section->addText('RUBRIK PENILAIAN', $bold);
+            $tbl = $section->addTable(['borderSize' => 6, 'cellMargin' => 40]);
+            $tbl->addRow();
+            foreach (['Aspek', 'Sangat Baik', 'Baik', 'Cukup', 'Perlu Bimbingan'] as $h) { $tbl->addCell(2500)->addText($h, $bold); }
+            foreach ($c['rubrik_penilaian'] as $rp) {
+                $tbl->addRow();
+                $tbl->addCell(2500)->addText($rp['aspek'] ?? '', $font);
+                $tbl->addCell(2500)->addText($rp['sangat_baik'] ?? '', $font);
+                $tbl->addCell(2500)->addText($rp['baik'] ?? '', $font);
+                $tbl->addCell(2500)->addText($rp['cukup'] ?? '', $font);
+                $tbl->addCell(2500)->addText($rp['perlu_bimbingan'] ?? '', $font);
             }
             $section->addTextBreak();
         }
 
-        // Asesmen
-        $as = $c['asesmen'] ?? [];
-        if ($as) {
-            $section->addText('F. Asesmen', $bold);
-            $section->addText('Jenis: ' . (is_array($as['jenis'] ?? '') ? implode(', ', $as['jenis']) : ($as['jenis'] ?? '')), $font);
-            $section->addText('Teknik: ' . (is_array($as['teknik'] ?? '') ? implode(', ', $as['teknik']) : ($as['teknik'] ?? '')), $font);
-            $section->addTextBreak();
-        }
+        // Penilaian tables
+        $this->addTableDocx($section, 'PENILAIAN SIKAP', ['Aspek', 'Kriteria', 'Catatan'], $c['penilaian_sikap'] ?? [], ['aspek', 'kriteria', 'catatan'], $font, $bold);
+        $this->addTableDocx($section, 'PENILAIAN PENGETAHUAN', ['No', 'Indikator', 'Bentuk Soal', 'Skor'], $c['penilaian_pengetahuan'] ?? [], ['no', 'indikator', 'bentuk_soal', 'skor'], $font, $bold);
+        $this->addTableDocx($section, 'PENILAIAN KETERAMPILAN', ['Aspek', 'Indikator', 'Skor Maksimal'], $c['penilaian_keterampilan'] ?? [], ['aspek', 'indikator', 'skor_maksimal'], $font, $bold);
+
+        // Pengayaan & Remedial
+        $section->addText('PENGAYAAN: ' . ($c['pengayaan'] ?? '-'), $font);
+        $section->addText('REMEDIAL: ' . ($c['remedial'] ?? '-'), $font);
+        $section->addTextBreak();
+
+        // Refleksi
+        $section->addText('REFLEKSI GURU', $bold);
+        $rg = $c['refleksi_guru'] ?? [];
+        $section->addText('Apa yang berjalan baik? ' . ($rg['berjalan_baik'] ?? '-'), $font);
+        $section->addText('Apa yang perlu diperbaiki? ' . ($rg['perlu_diperbaiki'] ?? '-'), $font);
+        $section->addText('Tindak lanjut: ' . ($rg['tindak_lanjut'] ?? '-'), $font);
+        $section->addText('REFLEKSI PESERTA DIDIK', $bold);
+        $rp = $c['refleksi_peserta_didik'] ?? [];
+        $section->addText('Apa yang saya pelajari hari ini? ' . ($rp['dipelajari'] ?? '-'), $font);
+        $section->addText('Bagian yang paling saya sukai: ' . ($rp['disukai'] ?? '-'), $font);
+        $section->addText('Bagian yang masih sulit: ' . ($rp['sulit'] ?? '-'), $font);
+        $section->addText('Yang akan saya lakukan selanjutnya: ' . ($rp['selanjutnya'] ?? '-'), $font);
+        $section->addTextBreak();
 
         // Lampiran
         $lamp = $c['lampiran'] ?? [];
         if ($lamp) {
-            $section->addText('Lampiran', $bold);
-            if (!empty($lamp['lkpd'])) $section->addText('LKPD: ' . $lamp['lkpd'], $font);
-            if (!empty($lamp['bahan_bacaan'])) $section->addText('Bahan Bacaan: ' . $lamp['bahan_bacaan'], $font);
-            if (!empty($lamp['glosarium']) && is_array($lamp['glosarium'])) {
-                foreach ($lamp['glosarium'] as $g) {
-                    $section->addText(($g['istilah'] ?? '') . ': ' . ($g['definisi'] ?? $g['arti'] ?? ''), $font);
+            $section->addText('LAMPIRAN', $bold);
+            if (!empty($lamp['lkpd'])) {
+                $section->addText('LKPD', $bold);
+                $lkpd = $lamp['lkpd'];
+                if (!empty($lkpd['identitas'])) {
+                    $id_lkpd = $lkpd['identitas'];
+                    $section->addText('Nama: ' . ($id_lkpd['nama'] ?? ''), $font);
+                    $section->addText('Kelas: ' . ($id_lkpd['kelas'] ?? ''), $font);
+                    $section->addText('Tanggal: ' . ($id_lkpd['tanggal'] ?? ''), $font);
                 }
+                $section->addText('Petunjuk: ' . ($lkpd['petunjuk'] ?? ''), $font);
+                $section->addText('Tujuan: ' . ($lkpd['tujuan'] ?? ''), $font);
+                $this->addList($section, $lkpd['langkah_kerja'] ?? [], $font);
+                $section->addText('Hasil: ' . ($lkpd['hasil'] ?? ''), $font);
             }
-            if (!empty($lamp['daftar_pustaka']) && is_array($lamp['daftar_pustaka'])) {
-                $section->addText('Daftar Pustaka:', $bold);
-                foreach ($lamp['daftar_pustaka'] as $dp) { $section->addText('- ' . $dp, $font); }
+            $section->addText('Bahan Bacaan Guru: ' . ($lamp['bahan_bacaan_guru'] ?? '-'), $font);
+            $section->addText('Bahan Bacaan Peserta Didik: ' . ($lamp['bahan_bacaan_peserta'] ?? '-'), $font);
+            if (!empty($lamp['glosarium'])) {
+                $section->addText('Glosarium', $bold);
+                $tbl = $section->addTable(['borderSize' => 6, 'cellMargin' => 40]);
+                $tbl->addRow(); $tbl->addCell(4000)->addText('Istilah', $bold); $tbl->addCell(8000)->addText('Arti', $bold);
+                foreach ($lamp['glosarium'] as $g) { $tbl->addRow(); $tbl->addCell(4000)->addText($g['istilah'] ?? '', $font); $tbl->addCell(8000)->addText($g['arti'] ?? '', $font); }
+            }
+            $section->addText('Daftar Pustaka:', $bold);
+            $this->addList($section, $lamp['daftar_pustaka'] ?? [], $font);
+        }
+
+        // METADATA
+        $md = $c['metadata'] ?? [];
+        if ($md) {
+            $section->addText('METADATA', $bold);
+            foreach (['Kode Modul', 'Versi', 'Tanggal Dibuat', 'Tanggal Revisi', 'Status', 'Penulis', 'Validator'] as $f) {
+                $key = str_replace(' ', '_', strtolower(preg_replace('/[A-Z]/', '_$0', lcfirst(str_replace(' ', '', $f)))));
+                $section->addText("{$f}: " . ($md[$key] ?? $md[str_replace(' ', '_', strtolower($f))] ?? '-'), $font);
             }
         }
+    }
+
+    protected function addList($section, array $items, array $font): void
+    {
+        foreach ($items as $item) {
+            $section->addText('- ' . (is_string($item) ? $item : (is_array($item) && isset($item[0]) ? $item[0] : json_encode($item))), $font);
+        }
+    }
+
+    protected function addTableDocx($section, string $title, array $headers, array $rows, array $fields, array $font, array $bold): void
+    {
+        if (empty($rows)) return;
+        $section->addText($title, $bold);
+        $tbl = $section->addTable(['borderSize' => 6, 'cellMargin' => 40]);
+        $tbl->addRow();
+        $cw = round(12000 / count($headers));
+        foreach ($headers as $h) { $tbl->addCell($cw)->addText($h, $bold); }
+        foreach ($rows as $row) {
+            $tbl->addRow();
+            foreach ($fields as $f) { $tbl->addCell($cw)->addText((string)($row[$f] ?? '-'), $font); }
+        }
+        $section->addTextBreak();
     }
 
     protected function buildModulHtml(array $c): string
     {
         $html = '<div class="modul">';
-        $html .= '<p class="bold center" style="font-size:14pt">MODUL AJAR KURIKULUM MERDEKA (TINGKAT SD)</p>';
+        $html .= '<p class="bold center" style="font-size:14pt">MODUL AJAR SD</p>';
 
-        // I. Informasi Umum
-        $html .= '<p class="bold" style="font-size:12pt; margin-top:15px">I. INFORMASI UMUM</p>';
-        $iu = $c['informasi_umum'] ?? [];
-        $html .= '<table class="info-table" style="margin-bottom:10px">';
-        $pairs = [
-            ['Nama Penyusun', $iu['nama_penyusun'] ?? ''],
-            ['Nama Instansi', $iu['instansi'] ?? ''],
-            ['Tahun Penyusunan', $iu['tahun_penyusunan'] ?? ''],
-            ['Jenjang Sekolah', $iu['jenjang_sekolah'] ?? ''],
-            ['Mata Pelajaran', $iu['mata_pelajaran'] ?? ''],
-            ['Fase / Kelas', $iu['fase_kelas'] ?? ''],
-            ['Bab / Tema', $iu['bab_tema'] ?? ''],
-            ['Alokasi Waktu', $iu['alokasi_waktu'] ?? ''],
-        ];
-        foreach ($pairs as [$label, $val]) {
-            $html .= '<tr><td style="width:200px; font-weight:bold; padding:2px 5px">' . e($label) . '</td><td style="padding:2px 5px">: ' . e((string)$val) . '</td></tr>';
+        // IDENTITAS MODUL
+        $html .= '<p class="bold" style="font-size:12pt; margin-top:15px">IDENTITAS MODUL</p>';
+        $id = $c['identitas'] ?? [];
+        $html .= '<table class="info-table">';
+        foreach (['Nama Sekolah', 'Tahun Pelajaran', 'Semester', 'Fase', 'Kelas', 'Mata Pelajaran', 'Bab/Topik', 'Alokasi Waktu', 'Penyusun'] as $f) {
+            $key = str_replace(' ', '_', strtolower(str_replace('/', '_', str_replace('-', '_', $f))));
+            $vk = ['nama_sekolah' => 'nama_sekolah', 'tahun_pelajaran' => 'tahun_pelajaran', 'semester' => 'semester', 'fase' => 'fase', 'kelas' => 'kelas', 'mata_pelajaran' => 'mata_pelajaran', 'bab_topik' => 'bab_topik', 'alokasi_waktu' => 'alokasi_waktu', 'penyusun' => 'penyusun'];
+            $html .= '<tr><td style="width:200px; font-weight:bold">' . e($f) . '</td><td>: ' . e((string)($id[$vk[$f]] ?? '-')) . '</td></tr>';
         }
         $html .= '</table>';
 
-        // A. Profil Pelajar Pancasila
-        $ppp = $c['profil_pelajar_pancasila'] ?? [];
-        $html .= '<p class="bold" style="margin-top:10px">A. Profil Pelajar Pancasila</p>';
-        $html .= '<p style="font-size:10pt; color:#555">pilih 2-3 dimensi yang paling relevan:</p>';
-        if (isset($ppp['pilihan']) && is_array($ppp['pilihan'])) {
-            foreach ($ppp['pilihan'] as $p) {
-                $check = ($p['terpilih'] ?? false) ? '[x]' : '[ ]';
-                $sub = ($p['terpilih'] ?? false) && !empty($p['sub_elemen']) ? ' — ' . e($p['sub_elemen']) : '';
-                $html .= '<p style="margin-left:15px">' . $check . ' ' . e($p['label']) . $sub . '</p>';
+        // INFORMASI UMUM
+        $html .= '<p class="bold" style="font-size:12pt; margin-top:15px">INFORMASI UMUM</p>';
+        $html .= $this->h2('Capaian Pembelajaran (CP)') . '<pre style="font-family:inherit">' . e($c['cp'] ?? '-') . '</pre>';
+        $html .= $this->h2('Tujuan Pembelajaran (TP)') . $this->ul($c['tp'] ?? []);
+        $html .= $this->h2('Indikator Ketercapaian') . $this->ul($c['indikator_ketercapaian'] ?? []);
+        $html .= $this->h2('Profil Lulusan') . $this->ul($c['profil_lulusan'] ?? []);
+        $html .= $this->h2('Dimensi Profil Pelajar Pancasila') . $this->ul($c['dimensi_ppp'] ?? []);
+        $html .= '<p><strong>Kompetensi Awal:</strong> ' . e($c['kompetensi_awal'] ?? '-') . '</p>';
+        $html .= '<p><strong>Sarana dan Prasarana:</strong> ' . e(is_array($c['sarana_prasarana'] ?? '') ? implode(', ', $c['sarana_prasarana']) : ($c['sarana_prasarana'] ?? '-')) . '</p>';
+        $html .= '<p><strong>Target Peserta Didik:</strong> ' . e($c['target_peserta_didik'] ?? '-') . '</p>';
+        $html .= '<p><strong>Model Pembelajaran:</strong> ' . e($c['model_pembelajaran'] ?? '-') . '</p>';
+        $html .= '<p><strong>Pendekatan:</strong> ' . e($c['pendekatan'] ?? '-') . '</p>';
+        $html .= '<p><strong>Metode:</strong> ' . e(is_array($c['metode'] ?? '') ? implode(', ', $c['metode']) : ($c['metode'] ?? '-')) . '</p>';
+
+        // MATERI
+        $html .= '<p class="bold" style="font-size:12pt; margin-top:15px">MATERI PEMBELAJARAN</p>';
+        $html .= '<p><strong>Materi Inti:</strong> ' . e($c['materi_inti'] ?? '-') . '</p>';
+        $html .= '<p><strong>Materi Pendukung:</strong> ' . e($c['materi_pendukung'] ?? '-') . '</p>';
+        if (!empty($c['istilah_penting'])) {
+            $html .= $this->h2('Istilah Penting') . $this->table(['Istilah', 'Penjelasan'], $c['istilah_penting'], ['istilah', 'penjelasan']);
+        }
+
+        $html .= '<p class="bold" style="font-size:12pt; margin-top:15px">PEMAHAMAN BERMAKNA</p>' . $this->ul($c['pemahaman_bermakna'] ?? []);
+        $html .= '<p class="bold" style="font-size:12pt; margin-top:15px">PERTANYAAN PEMANTIK</p>' . $this->ol($c['pertanyaan_pemantik'] ?? []);
+
+        // KEGIATAN PEMBELAJARAN
+        $html .= '<p class="bold" style="font-size:12pt; margin-top:15px">KEGIATAN PEMBELAJARAN</p>';
+        if (!empty($c['kegiatan_pembelajaran'])) {
+            foreach ($c['kegiatan_pembelajaran'] as $kp) {
+                $html .= '<p class="bold" style="margin-top:10px">' . e($kp['pertemuan'] ?? 'Pertemuan') . '</p>';
+                $html .= '<p class="bold">Pendahuluan</p><p style="margin-left:15px">' . nl2br(e($kp['pendahuluan'] ?? '-')) . '</p>';
+                $html .= '<p class="bold">Kegiatan Inti</p><p style="margin-left:15px">' . nl2br(e($kp['inti'] ?? '-')) . '</p>';
+                $html .= '<p class="bold">Penutup</p><p style="margin-left:15px">' . nl2br(e($kp['penutup'] ?? '-')) . '</p>';
             }
         }
 
-        // B. Sarana dan Prasarana
-        $sp = $c['sarana_prasarana'] ?? [];
-        $html .= '<p class="bold" style="margin-top:10px">B. Sarana dan Prasarana</p>';
-        $html .= '<p style="margin-left:15px"><strong>Media Pembelajaran:</strong> ' . e(is_array($sp['media_pembelajaran'] ?? '') ? implode(', ', $sp['media_pembelajaran']) : ($sp['media_pembelajaran'] ?? '')) . '</p>';
-        $html .= '<p style="margin-left:15px"><strong>Sumber Belajar:</strong> ' . e(is_array($sp['sumber_belajar'] ?? '') ? implode(', ', $sp['sumber_belajar']) : ($sp['sumber_belajar'] ?? '')) . '</p>';
-
-        // C. Target Peserta Didik
-        $tp = $c['target_peserta_didik'] ?? [];
-        $html .= '<p class="bold" style="margin-top:10px">C. Target Peserta Didik</p>';
-        $html .= '<p style="margin-left:15px">' . (($tp['reguler'] ?? false) ? '[x]' : '[ ]') . ' Peserta didik reguler/tipikal (umum)</p>';
-        $html .= '<p style="margin-left:15px">' . (($tp['pencapaian_tinggi'] ?? false) ? '[x]' : '[ ]') . ' Peserta didik dengan pencapaian tinggi</p>';
-        $html .= '<p style="margin-left:15px">' . (($tp['kesulitan_belajar'] ?? false) ? '[x]' : '[ ]') . ' Peserta didik dengan kesulitan belajar</p>';
-
-        // D. Model & Metode
-        $mm = $c['model_metode'] ?? [];
-        $html .= '<p class="bold" style="margin-top:10px">D. Model &amp; Metode Pembelajaran</p>';
-        $html .= '<p style="margin-left:15px"><strong>Model Pembelajaran:</strong> ' . e($mm['model_pembelajaran'] ?? '-') . '</p>';
-        $html .= '<p style="margin-left:15px"><strong>Metode:</strong> ' . e(is_array($mm['metode'] ?? '') ? implode(', ', $mm['metode']) : ($mm['metode'] ?? '')) . '</p>';
-
-        // II. Komponen Inti
-        $html .= '<p class="bold center" style="font-size:12pt; margin-top:20px">II. KOMPONEN INTI</p>';
-
-        // A. Capaian Pembelajaran
-        $cp = $c['capaian_pembelajaran'] ?? [];
-        $html .= '<p class="bold" style="margin-top:10px">A. Capaian Pembelajaran (CP)</p>';
-        $html .= '<pre style="font-family:inherit; margin-left:15px; white-space:pre-wrap">' . e($cp['cp_text'] ?? '') . '</pre>';
-
-        // B. Tujuan Pembelajaran
-        $html .= '<p class="bold" style="margin-top:10px">B. Tujuan Pembelajaran</p>';
-        if (isset($c['tujuan_pembelajaran']) && is_array($c['tujuan_pembelajaran'])) {
-            $html .= '<ul style="margin-left:15px">';
-            foreach ($c['tujuan_pembelajaran'] as $t) { $html .= '<li>' . e($t) . '</li>'; }
-            $html .= '</ul>';
+        // ASESMEN
+        $html .= '<p class="bold" style="font-size:12pt; margin-top:15px">ASESMEN</p>';
+        if (!empty($c['asesmen_diagnostik'])) {
+            $ad = $c['asesmen_diagnostik'];
+            $html .= $this->h2('Asesmen Diagnostik') . '<p style="margin-left:15px"><strong>Kognitif:</strong> ' . e($ad['kognitif'] ?? '-') . '</p><p style="margin-left:15px"><strong>Non-Kognitif:</strong> ' . e($ad['non_kognitif'] ?? '-') . '</p>';
+        }
+        if (!empty($c['asesmen_formatif'])) {
+            $af = $c['asesmen_formatif'];
+            $html .= $this->h2('Asesmen Formatif') . '<p style="margin-left:15px"><strong>Teknik:</strong> ' . e($af['teknik'] ?? '-') . '</p><p style="margin-left:15px"><strong>Instrumen:</strong> ' . e($af['instrumen'] ?? '-') . '</p><p style="margin-left:15px"><strong>Rubrik:</strong> ' . e($af['rubrik'] ?? '-') . '</p>';
+        }
+        if (!empty($c['asesmen_sumatif'])) {
+            $as = $c['asesmen_sumatif'];
+            $html .= $this->h2('Asesmen Sumatif') . '<p style="margin-left:15px"><strong>Bentuk:</strong> ' . e($as['bentuk'] ?? '-') . '</p><p style="margin-left:15px"><strong>Instrumen:</strong> ' . e($as['instrumen'] ?? '-') . '</p><p style="margin-left:15px"><strong>Rubrik:</strong> ' . e($as['rubrik'] ?? '-') . '</p>';
         }
 
-        // C. Pemahaman Bermakna
-        if (isset($c['pemahaman_bermakna'])) {
-            $html .= '<p class="bold" style="margin-top:10px">C. Pemahaman Bermakna</p><ul style="margin-left:15px">';
-            $items = is_array($c['pemahaman_bermakna']) ? $c['pemahaman_bermakna'] : [$c['pemahaman_bermakna']];
-            foreach ($items as $t) { $html .= '<li>' . e($t) . '</li>'; }
-            $html .= '</ul>';
-        }
+        // Tables
+        $html .= $this->tableSection('RUBRIK PENILAIAN', ['Aspek', 'Sangat Baik', 'Baik', 'Cukup', 'Perlu Bimbingan'], $c['rubrik_penilaian'] ?? [], ['aspek', 'sangat_baik', 'baik', 'cukup', 'perlu_bimbingan']);
+        $html .= $this->tableSection('PENILAIAN SIKAP', ['Aspek', 'Kriteria', 'Catatan'], $c['penilaian_sikap'] ?? [], ['aspek', 'kriteria', 'catatan']);
+        $html .= $this->tableSection('PENILAIAN PENGETAHUAN', ['No', 'Indikator', 'Bentuk Soal', 'Skor'], $c['penilaian_pengetahuan'] ?? [], ['no', 'indikator', 'bentuk_soal', 'skor']);
+        $html .= $this->tableSection('PENILAIAN KETERAMPILAN', ['Aspek', 'Indikator', 'Skor Maksimal'], $c['penilaian_keterampilan'] ?? [], ['aspek', 'indikator', 'skor_maksimal']);
 
-        // D. Pertanyaan Pemantik
-        if (isset($c['pertanyaan_pemantik'])) {
-            $html .= '<p class="bold" style="margin-top:10px">D. Pertanyaan Pemantik</p><ul style="margin-left:15px">';
-            $items = is_array($c['pertanyaan_pemantik']) ? $c['pertanyaan_pemantik'] : [$c['pertanyaan_pemantik']];
-            foreach ($items as $t) { $html .= '<li>' . e($t) . '</li>'; }
-            $html .= '</ul>';
-        }
+        $html .= '<p><strong>Pengayaan:</strong> ' . e($c['pengayaan'] ?? '-') . '</p>';
+        $html .= '<p><strong>Remedial:</strong> ' . e($c['remedial'] ?? '-') . '</p>';
 
-        // E. Kegiatan Pembelajaran
-        if (isset($c['kegiatan_pembelajaran']) && is_array($c['kegiatan_pembelajaran'])) {
-            $html .= '<p class="bold" style="margin-top:10px">E. Kegiatan Pembelajaran</p>';
-            foreach ($c['kegiatan_pembelajaran'] as $k) {
-                $html .= '<p class="bold" style="margin-left:15px">' . e($k['pertemuan'] ?? '') . '</p>';
-                if (!empty($k['pendahuluan'])) $html .= '<p style="margin-left:30px"><strong>Pendahuluan:</strong><br/>' . nl2br(e($k['pendahuluan'])) . '</p>';
-                if (!empty($k['inti'])) $html .= '<p style="margin-left:30px"><strong>Kegiatan Inti:</strong><br/>' . nl2br(e($k['inti'])) . '</p>';
-                if (!empty($k['penutup'])) $html .= '<p style="margin-left:30px"><strong>Penutup:</strong><br/>' . nl2br(e($k['penutup'])) . '</p>';
-            }
-        }
+        // REFLEKSI
+        $html .= '<p class="bold" style="font-size:12pt; margin-top:15px">REFLEKSI</p>';
+        $rg = $c['refleksi_guru'] ?? [];
+        $html .= $this->h2('Refleksi Guru');
+        $html .= '<p style="margin-left:15px"><strong>Apa yang berjalan baik?</strong> ' . e($rg['berjalan_baik'] ?? '-') . '</p>';
+        $html .= '<p style="margin-left:15px"><strong>Apa yang perlu diperbaiki?</strong> ' . e($rg['perlu_diperbaiki'] ?? '-') . '</p>';
+        $html .= '<p style="margin-left:15px"><strong>Tindak lanjut:</strong> ' . e($rg['tindak_lanjut'] ?? '-') . '</p>';
+        $rp = $c['refleksi_peserta_didik'] ?? [];
+        $html .= $this->h2('Refleksi Peserta Didik');
+        $html .= '<p style="margin-left:15px"><strong>Apa yang saya pelajari hari ini?</strong> ' . e($rp['dipelajari'] ?? '-') . '</p>';
+        $html .= '<p style="margin-left:15px"><strong>Bagian yang paling saya sukai:</strong> ' . e($rp['disukai'] ?? '-') . '</p>';
+        $html .= '<p style="margin-left:15px"><strong>Bagian yang masih sulit:</strong> ' . e($rp['sulit'] ?? '-') . '</p>';
+        $html .= '<p style="margin-left:15px"><strong>Yang akan saya lakukan selanjutnya:</strong> ' . e($rp['selanjutnya'] ?? '-') . '</p>';
 
-        // F. Asesmen
-        $as = $c['asesmen'] ?? [];
-        if ($as) {
-            $html .= '<p class="bold" style="margin-top:10px">F. Asesmen</p>';
-            $html .= '<p style="margin-left:15px"><strong>Jenis:</strong> ' . e(is_array($as['jenis'] ?? '') ? implode(', ', $as['jenis']) : ($as['jenis'] ?? '')) . '</p>';
-            $html .= '<p style="margin-left:15px"><strong>Teknik:</strong> ' . e(is_array($as['teknik'] ?? '') ? implode(', ', $as['teknik']) : ($as['teknik'] ?? '')) . '</p>';
-        }
-
-        // Lampiran
+        // LAMPIRAN
         $lamp = $c['lampiran'] ?? [];
         if ($lamp) {
-            $html .= '<p class="bold" style="margin-top:10px">Lampiran</p>';
-            if (!empty($lamp['lkpd'])) $html .= '<div style="margin-left:15px"><strong>LKPD:</strong><br/>' . nl2br(e($lamp['lkpd'])) . '</div>';
-            if (!empty($lamp['bahan_bacaan'])) $html .= '<div style="margin-left:15px; margin-top:5px"><strong>Bahan Bacaan:</strong><br/>' . nl2br(e($lamp['bahan_bacaan'])) . '</div>';
-            if (!empty($lamp['glosarium']) && is_array($lamp['glosarium'])) {
-                $html .= '<div style="margin-left:15px; margin-top:5px"><strong>Glosarium:</strong>';
-                foreach ($lamp['glosarium'] as $g) {
-                    $html .= '<p>' . e($g['istilah'] ?? '') . ': ' . e($g['definisi'] ?? $g['arti'] ?? '') . '</p>';
+            $html .= '<p class="bold" style="font-size:12pt; margin-top:15px">LAMPIRAN</p>';
+            if (!empty($lamp['lkpd'])) {
+                $lkpd = $lamp['lkpd'];
+                $html .= $this->h2('LKPD');
+                if (!empty($lkpd['identitas'])) {
+                    $idlk = $lkpd['identitas'];
+                    $html .= '<p>Nama: ' . e($idlk['nama'] ?? '') . '</p><p>Kelas: ' . e($idlk['kelas'] ?? '') . '</p><p>Tanggal: ' . e($idlk['tanggal'] ?? '') . '</p>';
                 }
-                $html .= '</div>';
+                $html .= '<p><strong>Petunjuk:</strong> ' . e($lkpd['petunjuk'] ?? '') . '</p>';
+                $html .= '<p><strong>Tujuan:</strong> ' . e($lkpd['tujuan'] ?? '') . '</p>';
+                $html .= $this->h2('Langkah Kerja') . $this->ol($lkpd['langkah_kerja'] ?? []);
+                $html .= '<p><strong>Hasil:</strong> ' . e($lkpd['hasil'] ?? '') . '</p>';
             }
-            if (!empty($lamp['daftar_pustaka']) && is_array($lamp['daftar_pustaka'])) {
-                $html .= '<div style="margin-left:15px; margin-top:5px"><strong>Daftar Pustaka:</strong><ol>';
-                foreach ($lamp['daftar_pustaka'] as $dp) { $html .= '<li>' . e($dp) . '</li>'; }
-                $html .= '</ol></div>';
-            }
+            $html .= '<p><strong>Bahan Bacaan Guru:</strong> ' . e($lamp['bahan_bacaan_guru'] ?? '-') . '</p>';
+            $html .= '<p><strong>Bahan Bacaan Peserta Didik:</strong> ' . e($lamp['bahan_bacaan_peserta'] ?? '-') . '</p>';
+            $html .= $this->tableSection('Glosarium', ['Istilah', 'Arti'], $lamp['glosarium'] ?? [], ['istilah', 'arti']);
+            $html .= $this->h2('Daftar Pustaka') . $this->ol($lamp['daftar_pustaka'] ?? []);
+        }
+
+        // METADATA
+        $md = $c['metadata'] ?? [];
+        if ($md) {
+            $html .= '<p class="bold" style="font-size:12pt; margin-top:15px">METADATA</p><table class="info-table">';
+            $map = ['Kode Modul' => 'kode_modul', 'Versi' => 'versi', 'Tanggal Dibuat' => 'tanggal_dibuat', 'Tanggal Revisi' => 'tanggal_revisi', 'Status' => 'status', 'Penulis' => 'penulis', 'Validator' => 'validator'];
+            foreach ($map as $label => $key) { $html .= '<tr><td style="width:200px; font-weight:bold">' . e($label) . '</td><td>: ' . e((string)($md[$key] ?? '-')) . '</td></tr>'; }
+            $html .= '</table>';
+        }
+
+        // CHECKLIST
+        $cl = $c['checklist'] ?? [];
+        if ($cl) {
+            $html .= '<p class="bold" style="font-size:12pt; margin-top:15px">OUTPUT CHECKLIST</p>';
+            foreach ($cl as $k => $v) { $html .= '<p>' . ($v ? '[x]' : '[ ]') . ' ' . e(str_replace('_', ' ', $k)) . '</p>'; }
         }
 
         $html .= '</div>';
         return $html;
+    }
+
+    private function h2(string $s): string { return '<p class="bold" style="margin-top:10px">' . e($s) . '</p>'; }
+    private function ul(array $items): string { if (empty($items)) return ''; $h = '<ul>'; foreach ($items as $i) { $h .= '<li>' . e(is_string($i) ? $i : '') . '</li>'; } return $h . '</ul>'; }
+    private function ol(array $items): string { if (empty($items)) return ''; $h = '<ol>'; foreach ($items as $i) { $h .= '<li>' . e(is_string($i) ? $i : '') . '</li>'; } return $h . '</ol>'; }
+    private function table(array $headers, array $rows, array $fields): string {
+        if (empty($rows)) return '';
+        $h = '<table class="kisi-table"><thead><tr>';
+        foreach ($headers as $th) { $h .= '<th>' . e($th) . '</th>'; }
+        $h .= '</tr></thead><tbody>';
+        foreach ($rows as $row) { $h .= '<tr>'; foreach ($fields as $f) { $h .= '<td>' . e((string)($row[$f] ?? '-')) . '</td>'; } $h .= '</tr>'; }
+        return $h . '</tbody></table>';
+    }
+    private function tableSection(string $title, array $headers, array $rows, array $fields): string {
+        if (empty($rows)) return '';
+        return $this->h2($title) . $this->table($headers, $rows, $fields);
     }
 }
