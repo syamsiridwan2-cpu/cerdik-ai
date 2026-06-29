@@ -11,6 +11,10 @@ export default function ExamDetailPage() {
   const [loading, setLoading] = useState(true);
   const [newQuestion, setNewQuestion] = useState({ question: '', options: { A: '', B: '', C: '', D: '' }, correct_answer: 'A', bobot: 1 });
   const [adding, setAdding] = useState(false);
+  const [importJson, setImportJson] = useState('');
+  const [importing, setImporting] = useState(false);
+  const [showImport, setShowImport] = useState(false);
+  const [showFormat, setShowFormat] = useState(false);
 
   useEffect(() => {
     api.get(`/exams/${id}`).then((res) => {
@@ -42,6 +46,46 @@ export default function ExamDetailPage() {
     } catch {}
   };
 
+  const handleImport = async () => {
+    let parsed;
+    try {
+      parsed = JSON.parse(importJson);
+    } catch {
+      return toast.error('Format JSON tidak valid');
+    }
+    const questions = Array.isArray(parsed) ? parsed : parsed.questions;
+    if (!Array.isArray(questions) || questions.length === 0) {
+      return toast.error('JSON harus berisi array questions');
+    }
+    setImporting(true);
+    try {
+      const res = await api.post(`/exams/${id}/import-questions`, { questions });
+      toast.success(res.data.message || 'Soal berhasil diimpor');
+      setImportJson('');
+      setShowImport(false);
+      api.get(`/exams/${id}`).then((res) => setExam(res.data.data));
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || 'Gagal import soal');
+    } finally {
+      setImporting(false);
+    }
+  };
+
+  const formatExample = `[
+  {
+    "question": "Apa ibukota Indonesia?",
+    "options": { "A": "Jakarta", "B": "Surabaya", "C": "Bandung", "D": "Medan" },
+    "correct_answer": "A",
+    "bobot": 1
+  },
+  {
+    "question": "Siapa presiden pertama RI?",
+    "options": { "A": "Soeharto", "B": "Soekarno", "C": "Hatta", "D": "SBY" },
+    "correct_answer": "B",
+    "bobot": 1
+  }
+]`;
+
   if (loading) return <p className="text-slate-400">Memuat...</p>;
   if (!exam) return <p className="text-red-400">Ujian tidak ditemukan</p>;
 
@@ -56,9 +100,34 @@ export default function ExamDetailPage() {
 
       <div className="grid md:grid-cols-5 gap-6">
         <div className="md:col-span-3 bg-slate-800/50 rounded-xl p-5 border border-slate-700">
-          <h2 className="text-lg font-semibold text-white mb-4">Daftar Soal ({exam.questions?.length || 0})</h2>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-semibold text-white">Daftar Soal ({exam.questions?.length || 0})</h2>
+            <button onClick={() => setShowImport(!showImport)}
+              className="px-3 py-1.5 text-xs bg-cyan-600 hover:bg-cyan-700 text-white rounded-lg transition-colors">
+              {showImport ? 'Tutup' : 'Import Soal'}
+            </button>
+          </div>
+
+          {showImport && (
+            <div className="mb-4 p-3 bg-slate-900/50 rounded-lg border border-cyan-700">
+              <p className="text-sm font-medium text-cyan-400 mb-2">Import Soal (JSON)</p>
+              <button onClick={() => setShowFormat(!showFormat)} className="text-xs text-cyan-500 hover:underline mb-2 block">
+                {showFormat ? 'Sembunyikan' : 'Lihat'} Format JSON
+              </button>
+              {showFormat && (
+                <pre className="text-xs text-slate-400 bg-slate-950 p-2 rounded mb-2 overflow-x-auto whitespace-pre-wrap">{formatExample}</pre>
+              )}
+              <textarea value={importJson} onChange={(e) => setImportJson(e.target.value)} rows={8} placeholder='[{"question":"...","options":{"A":"...","B":"...","C":"...","D":"..."},"correct_answer":"A","bobot":1}]'
+                className="w-full px-3 py-2 bg-slate-950 border border-slate-600 rounded-lg text-white text-xs font-mono focus:outline-none focus:border-cyan-500 mb-2" />
+              <button onClick={handleImport} disabled={importing || !importJson.trim()}
+                className="px-4 py-1.5 text-sm bg-cyan-600 hover:bg-cyan-700 text-white rounded-lg transition-colors disabled:opacity-50">
+                {importing ? 'Mengimpor...' : 'Import'}
+              </button>
+            </div>
+          )}
+
           {exam.questions?.length === 0 ? (
-            <p className="text-slate-500 text-sm">Belum ada soal. Tambahkan soal di samping.</p>
+            <p className="text-slate-500 text-sm">Belum ada soal. Tambahkan atau import soal.</p>
           ) : (
             <div className="space-y-3 max-h-[500px] overflow-y-auto">
               {exam.questions.map((q: any, i: number) => (

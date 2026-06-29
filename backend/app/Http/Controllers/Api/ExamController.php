@@ -151,6 +151,33 @@ class ExamController extends Controller
         return $this->success(null, 'Soal berhasil dihapus');
     }
 
+    public function importQuestions(Request $request, Exam $exam)
+    {
+        if ($exam->user_id !== $request->user()->id) {
+            return $this->error('Forbidden', 403);
+        }
+
+        $validated = $request->validate([
+            'questions' => 'required|array|min:1',
+            'questions.*.question' => 'required|string',
+            'questions.*.options' => 'required|array|size:4',
+            'questions.*.options.A' => 'required|string',
+            'questions.*.options.B' => 'required|string',
+            'questions.*.options.C' => 'required|string',
+            'questions.*.options.D' => 'required|string',
+            'questions.*.correct_answer' => 'required|in:A,B,C,D',
+            'questions.*.bobot' => 'required|integer|min:1|max:100',
+        ]);
+
+        $imported = 0;
+        foreach ($validated['questions'] as $q) {
+            $exam->questions()->create($q);
+            $imported++;
+        }
+
+        return $this->success(['imported' => $imported], "{$imported} soal berhasil diimpor");
+    }
+
     public function activate(Exam $exam)
     {
         $exam->update(['status' => 'active']);

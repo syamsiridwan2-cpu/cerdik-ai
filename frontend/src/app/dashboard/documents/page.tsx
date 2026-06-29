@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import api from '@/lib/api';
 import toast from 'react-hot-toast';
 
@@ -26,6 +27,7 @@ interface Doc {
 }
 
 export default function DocumentsPage() {
+  const router = useRouter();
   const [docs, setDocs] = useState<Doc[]>([]);
   const [loading, setLoading] = useState(true);
   const [typeFilter, setTypeFilter] = useState('');
@@ -49,6 +51,9 @@ export default function DocumentsPage() {
     modul: 'bg-blue-600/20 text-blue-400',
     lkpd: 'bg-green-600/20 text-green-400',
     soal: 'bg-purple-600/20 text-purple-400',
+    rpp: 'bg-amber-600/20 text-amber-400',
+    kisi: 'bg-cyan-600/20 text-cyan-400',
+    rubrik: 'bg-rose-600/20 text-rose-400',
   };
 
   return (
@@ -61,6 +66,9 @@ export default function DocumentsPage() {
           <option value="modul">Modul Ajar</option>
           <option value="lkpd">LKPD</option>
           <option value="soal">Soal</option>
+          <option value="rpp">RPP 1 Lembar</option>
+          <option value="kisi">Kisi-kisi</option>
+          <option value="rubrik">Rubrik</option>
         </select>
       </div>
 
@@ -89,6 +97,8 @@ export default function DocumentsPage() {
                   className="px-3 py-1.5 text-xs bg-indigo-600/20 text-indigo-400 rounded-lg hover:bg-indigo-600/30 transition-colors">DOCX</button>
                 <button onClick={() => downloadDoc(doc.id, 'pdf')}
                   className="px-3 py-1.5 text-xs bg-red-600/20 text-red-400 rounded-lg hover:bg-red-600/30 transition-colors">PDF</button>
+                <button onClick={() => router.push(`/dashboard/documents/${doc.id}/edit`)}
+                  className="px-3 py-1.5 text-xs bg-slate-700 text-slate-400 rounded-lg hover:bg-blue-600/30 hover:text-blue-400 transition-colors">Edit</button>
                 <button onClick={() => handleDelete(doc.id)}
                   className="px-3 py-1.5 text-xs bg-slate-700 text-slate-400 rounded-lg hover:bg-red-600/30 hover:text-red-400 transition-colors">Hapus</button>
               </div>

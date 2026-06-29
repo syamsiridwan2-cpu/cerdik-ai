@@ -13,19 +13,22 @@ use Illuminate\Support\Facades\Route;
 Route::post('/auth/register', [AuthController::class, 'register']);
 Route::post('/auth/login', [AuthController::class, 'login']);
 
-// Student routes (no auth required)
-Route::post('/exams/join', [ExamController::class, 'join']);
-Route::get('/exams/{exam}/session/{session}/questions', [ExamController::class, 'getQuestions']);
-Route::post('/exams/{exam}/session/{session}/answer', [ExamController::class, 'saveAnswer']);
-Route::post('/exams/{exam}/session/{session}/submit', [ExamController::class, 'submit']);
-Route::post('/exams/{exam}/session/{session}/tab-switch', [ExamController::class, 'recordTabSwitch']);
-Route::get('/exams/{exam}/session/{session}/result', [ExamController::class, 'studentResult']);
-
 // Authenticated routes
 Route::middleware('auth:sanctum')->group(function () {
+    // Student exam routes (no role check)
+    Route::post('/exams/join', [ExamController::class, 'join']);
+    Route::get('/exams/{exam}/session/{session}/questions', [ExamController::class, 'getQuestions']);
+    Route::post('/exams/{exam}/session/{session}/answer', [ExamController::class, 'saveAnswer']);
+    Route::post('/exams/{exam}/session/{session}/submit', [ExamController::class, 'submit']);
+    Route::post('/exams/{exam}/session/{session}/tab-switch', [ExamController::class, 'recordTabSwitch']);
+    Route::get('/exams/{exam}/session/{session}/result', [ExamController::class, 'studentResult']);
+
+    // Auth
     // Auth
     Route::get('/auth/me', [AuthController::class, 'me']);
     Route::post('/auth/logout', [AuthController::class, 'logout']);
+    Route::put('/auth/profile', [AuthController::class, 'updateProfile']);
+    Route::put('/auth/password', [AuthController::class, 'changePassword']);
 
     // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index']);
@@ -34,12 +37,16 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::middleware('role:guru,admin')->group(function () {
         Route::post('/ai/generate-modul', [AIGeneratorController::class, 'generateModul']);
         Route::post('/ai/generate-lkpd', [AIGeneratorController::class, 'generateLkpd']);
+        Route::post('/ai/generate-rpp', [AIGeneratorController::class, 'generateRpp']);
+        Route::post('/ai/generate-kisi', [AIGeneratorController::class, 'generateKisi']);
+        Route::post('/ai/generate-rubrik', [AIGeneratorController::class, 'generateRubrik']);
         Route::post('/ai/generate-from-pdf', [AIGeneratorController::class, 'generateFromPdf']);
     });
 
     // Documents
     Route::get('/documents', [DocumentController::class, 'index']);
     Route::get('/documents/{document}', [DocumentController::class, 'show']);
+    Route::put('/documents/{document}', [DocumentController::class, 'update']);
     Route::delete('/documents/{document}', [DocumentController::class, 'destroy']);
     Route::get('/documents/{document}/export-docx', [DocumentController::class, 'exportDocx']);
     Route::get('/documents/{document}/export-pdf', [DocumentController::class, 'exportPdf']);
@@ -52,6 +59,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/exams/{exam}', [ExamController::class, 'update']);
         Route::delete('/exams/{exam}', [ExamController::class, 'destroy']);
         Route::post('/exams/{exam}/questions', [ExamController::class, 'addQuestion']);
+        Route::post('/exams/{exam}/import-questions', [ExamController::class, 'importQuestions']);
         Route::put('/exams/{exam}/questions/{question}', [ExamController::class, 'updateQuestion']);
         Route::delete('/exams/{exam}/questions/{question}', [ExamController::class, 'deleteQuestion']);
         Route::post('/exams/{exam}/activate', [ExamController::class, 'activate']);

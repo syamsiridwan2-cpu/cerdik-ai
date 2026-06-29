@@ -35,6 +35,31 @@ class DocumentController extends Controller
         return $this->success($document);
     }
 
+
+    public function update(Request $request, Document $document)
+    {
+        if ($document->user_id !== $request->user()->id && !$request->user()->isAdmin()) {
+            return $this->error('Forbidden', 403);
+        }
+
+        $validated = $request->validate([
+            'title' => 'nullable|string|max:255',
+            'content' => 'nullable',
+        ]);
+
+        if (isset($validated['title'])) {
+            $document->title = $validated['title'];
+        }
+
+        if (isset($validated['content'])) {
+            $document->content = $validated['content'];
+        }
+
+        $document->save();
+
+        return $this->success($document->fresh(), 'Dokumen berhasil diperbarui');
+    }
+
     public function destroy(Request $request, Document $document)
     {
         if ($document->user_id !== $request->user()->id && !$request->user()->isAdmin()) {

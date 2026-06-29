@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Document;
 use App\Models\Exam;
+use App\Models\ExamSession;
 use Illuminate\Http\Request;
 
 class DashboardController extends Controller
@@ -15,6 +16,10 @@ class DashboardController extends Controller
 
         if ($user->isAdmin()) {
             return $this->success($this->adminStats());
+        }
+
+        if ($user->isSiswa()) {
+            return $this->success($this->siswaStats($user));
         }
 
         return $this->success($this->guruStats($user));
@@ -42,6 +47,25 @@ class DashboardController extends Controller
             'active_exams' => $activeExams,
             'recent_documents' => $recentDocuments,
             'documents_by_type' => $documentsByType,
+        ];
+    }
+
+    protected function siswaStats($user)
+    {
+        $sessions = ExamSession::where('student_name', $user->name)
+            ->orWhere('nisn', $user->nisn)
+            ->with(['exam' => function ($q) { $q->select('id', 'title', 'kkm', 'duration', 'status'); }])
+            ->latest()
+            ->get();
+
+        $inProgress = $sessions->where('status', 'in_progress')->values();
+        $completed = $sessions->where('status', 'completed')->values();
+
+        return [
+            'poin' => $user->poin,
+            'total_exams_taken' => $sessions->count(),
+            'in_progress_exams' => $inProgress,
+            'completed_exams' => $completed,
         ];
     }
 
