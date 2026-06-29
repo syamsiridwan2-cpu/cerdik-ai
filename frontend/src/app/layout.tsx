@@ -5,6 +5,7 @@ import './globals.css';
 export const metadata: Metadata = {
   title: 'CerdikAI - Aplikasi AI untuk Guru',
   description: 'Hasilkan Modul Ajar, LKPD, dan Soal dengan AI. Kelola ujian online dengan mudah.',
+  icons: '/favicon.svg',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
