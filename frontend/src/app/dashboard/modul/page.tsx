@@ -59,238 +59,208 @@ export default function GenerateModulPage() {
     if (!c) return null;
     return (
       <div className="text-white" style={{ fontFamily: "'Times New Roman', serif", fontSize: '12pt', lineHeight: '1.6' }}>
-        {/* A. Informasi Umum */}
+        {/* I. Informasi Umum */}
         {c.informasi_umum && (
           <div className="mb-6">
-            <p className="font-bold text-base text-indigo-300 mb-3">A. INFORMASI UMUM MODUL</p>
-            <div className="text-sm space-y-1 text-slate-200 ml-4">
-              {Object.entries(c.informasi_umum).map(([k, v]: any) => (
-                <p key={k}><span className="font-semibold text-slate-300">{k.replace(/_/g, ' ')}</span> : {v}</p>
+            <p className="font-bold text-base text-indigo-300 mb-2">I. INFORMASI UMUM</p>
+            <table className="w-full text-sm border-collapse border border-slate-600">
+              <tbody>
+                {[
+                  ['Nama Penyusun', c.informasi_umum.nama_penyusun],
+                  ['Nama Instansi', c.informasi_umum.instansi],
+                  ['Tahun Penyusunan', c.informasi_umum.tahun_penyusunan],
+                  ['Jenjang Sekolah', c.informasi_umum.jenjang_sekolah],
+                  ['Mata Pelajaran', c.informasi_umum.mata_pelajaran],
+                  ['Fase / Kelas', c.informasi_umum.fase_kelas],
+                  ['Bab / Tema', c.informasi_umum.bab_tema],
+                  ['Alokasi Waktu', c.informasi_umum.alokasi_waktu],
+                ].map(([label, val], i) => (
+                  <tr key={i} className="border-b border-slate-700">
+                    <td className="py-1.5 pr-3 font-semibold text-slate-300 align-top w-1/3">{label}</td>
+                    <td className="py-1.5 text-slate-200">{val || '-'}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+
+        {/* A. Profil Pelajar Pancasila */}
+        {c.profil_pelajar_pancasila && (
+          <div className="mb-4 ml-4">
+            <p className="font-semibold text-sm text-indigo-300 mb-1">A. Profil Pelajar Pancasila</p>
+            <p className="text-xs text-slate-400 mb-1">pilih 2-3 dimensi yang paling relevan:</p>
+            <div className="space-y-1 text-sm">
+              {Array.isArray(c.profil_pelajar_pancasila.pilihan) && c.profil_pelajar_pancasila.pilihan.map((p: any, i: number) => (
+                <div key={i} className="flex items-start gap-2">
+                  <span className="text-indigo-400 mt-0.5">{p.terpilih ? '[x]' : '[ ]'}</span>
+                  <div>
+                    <span className="text-slate-200">{p.label}</span>
+                    {p.terpilih && p.sub_elemen && <span className="text-slate-400 text-xs ml-1">— {p.sub_elemen}</span>}
+                  </div>
+                </div>
               ))}
             </div>
           </div>
         )}
 
-        {/* B. Komponen Inti */}
-        <p className="font-bold text-base text-indigo-300 mb-3">B. KOMPONEN INTI</p>
+        {/* B. Sarana dan Prasarana */}
+        {c.sarana_prasarana && (
+          <div className="mb-4 ml-4">
+            <p className="font-semibold text-sm text-indigo-300 mb-1">B. Sarana dan Prasarana</p>
+            <div className="text-sm text-slate-200 space-y-1">
+              <p><span className="font-semibold text-slate-300">Media Pembelajaran:</span> {Array.isArray(c.sarana_prasarana.media_pembelajaran) ? c.sarana_prasarana.media_pembelajaran.join(', ') : c.sarana_prasarana.media_pembelajaran}</p>
+              <p><span className="font-semibold text-slate-300">Sumber Belajar:</span> {Array.isArray(c.sarana_prasarana.sumber_belajar) ? c.sarana_prasarana.sumber_belajar.join(', ') : c.sarana_prasarana.sumber_belajar}</p>
+            </div>
+          </div>
+        )}
 
+        {/* C. Target Peserta Didik */}
+        {c.target_peserta_didik && (
+          <div className="mb-4 ml-4">
+            <p className="font-semibold text-sm text-indigo-300 mb-1">C. Target Peserta Didik</p>
+            <div className="space-y-1 text-sm">
+              <p className="text-slate-200"><span className="text-indigo-400">{c.target_peserta_didik.reguler ? '[x]' : '[ ]'}</span> Peserta didik reguler/tipikal (umum)</p>
+              <p className="text-slate-200"><span className="text-indigo-400">{c.target_peserta_didik.pencapaian_tinggi ? '[x]' : '[ ]'}</span> Peserta didik dengan pencapaian tinggi</p>
+              <p className="text-slate-200"><span className="text-indigo-400">{c.target_peserta_didik.kesulitan_belajar ? '[x]' : '[ ]'}</span> Peserta didik dengan kesulitan belajar</p>
+            </div>
+          </div>
+        )}
+
+        {/* D. Model & Metode Pembelajaran */}
+        {c.model_metode && (
+          <div className="mb-4 ml-4">
+            <p className="font-semibold text-sm text-indigo-300 mb-1">D. Model &amp; Metode Pembelajaran</p>
+            <div className="text-sm text-slate-200 space-y-1">
+              <p><span className="font-semibold text-slate-300">Model Pembelajaran:</span> {c.model_metode.model_pembelajaran || '-'}</p>
+              <p><span className="font-semibold text-slate-300">Metode:</span> {Array.isArray(c.model_metode.metode) ? c.model_metode.metode.join(', ') : c.model_metode.metode}</p>
+            </div>
+          </div>
+        )}
+
+        {/* II. Komponen Inti */}
+        <p className="font-bold text-base text-indigo-300 mb-3 mt-6">II. KOMPONEN INTI</p>
+
+        {/* A. Capaian Pembelajaran */}
         {c.capaian_pembelajaran && (
-          <div className="ml-4 mb-4">
-            <p className="font-semibold text-sm text-slate-200">Capaian Pembelajaran Fase {c.capaian_pembelajaran.fase || ''}</p>
-            <p className="text-sm text-slate-300 whitespace-pre-line mt-1">{c.capaian_pembelajaran.deskripsi || ''}</p>
-            {c.capaian_pembelajaran.elemen && (
-              <div className="mt-2">
-                <p className="font-semibold text-sm text-slate-200">Elemen</p>
-                <p className="text-sm text-slate-300">{c.capaian_pembelajaran.elemen}</p>
-              </div>
-            )}
-            {c.capaian_pembelajaran.cp_berdasar_elemen && (
-              <div className="mt-2">
-                <p className="font-semibold text-sm text-slate-200">Capaian Pembelajaran Berdasar Elemen</p>
-                <p className="text-sm text-slate-300 whitespace-pre-line">{c.capaian_pembelajaran.cp_berdasar_elemen}</p>
-              </div>
-            )}
+          <div className="mb-4 ml-4">
+            <p className="font-semibold text-sm text-indigo-300 mb-1">A. Capaian Pembelajaran (CP)</p>
+            <pre className="text-sm text-slate-300 whitespace-pre-wrap font-serif bg-slate-900/30 p-3 rounded-lg border border-slate-700/30">{c.capaian_pembelajaran.cp_text || ''}</pre>
           </div>
         )}
 
         {/* Tujuan Pembelajaran */}
         {c.tujuan_pembelajaran && (
-          <div className="ml-4 mb-4">
-            <p className="font-semibold text-sm text-slate-200">Tujuan Pembelajaran</p>
-            {Array.isArray(c.tujuan_pembelajaran) ? c.tujuan_pembelajaran.map((tp: any, i: number) => (
-              <p key={i} className="text-sm text-slate-300 ml-2">● {tp}</p>
-            )) : <p className="text-sm text-slate-300 whitespace-pre-line">{c.tujuan_pembelajaran}</p>}
-          </div>
-        )}
-
-        {/* Profil Pelajar Pancasila */}
-        {c.profil_pelajar_pancasila && (
-          <div className="ml-4 mb-4">
-            <p className="font-semibold text-sm text-slate-200">Profil Pelajar Pancasila</p>
-            {Array.isArray(c.profil_pelajar_pancasila.elemen) && (
-              <table className="w-full text-xs mt-2 border-collapse">
-                <thead><tr className="border-b border-slate-600 text-slate-400"><th className="text-left py-1 pr-2">Elemen</th><th className="text-left py-1">Sub Elemen</th></tr></thead>
-                <tbody>
-                  {c.profil_pelajar_pancasila.elemen.map((e: any, i: number) => (
-                    <tr key={i} className="border-b border-slate-700/50">
-                      <td className="py-1 pr-2 text-slate-300">{e.elemen || ''}</td>
-                      <td className="py-1 text-slate-400">{e.sub_elemen || ''}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            )}
-          </div>
-        )}
-
-        {/* 8 Profil Lulusan */}
-        {c.profil_lulusan && (
-          <div className="ml-4 mb-4">
-            <p className="font-semibold text-sm text-slate-200">8 Profil Lulusan</p>
-            {Array.isArray(c.profil_lulusan) && c.profil_lulusan.map((pl: any, i: number) => (
-              <div key={i} className="mb-2">
-                <p className="text-sm text-slate-200 font-medium">{i + 1}. {pl.nama || ''}</p>
-                <p className="text-sm text-slate-300 ml-4 whitespace-pre-line">{pl.deskripsi || ''}</p>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* Kata Kunci */}
-        {c.kata_kunci && (
-          <div className="ml-4 mb-4">
-            <p className="font-semibold text-sm text-slate-200">Kata kunci</p>
-            <p className="text-sm text-slate-300">{Array.isArray(c.kata_kunci) ? c.kata_kunci.join(', ') : c.kata_kunci}</p>
-          </div>
-        )}
-
-        {/* Prasyarat */}
-        {c.prasyarat && (
-          <div className="ml-4 mb-4">
-            <p className="font-semibold text-sm text-slate-200">Konsep dan Keterampilan Prasyarat</p>
-            <p className="text-sm text-slate-300 whitespace-pre-line">{c.prasyarat}</p>
-          </div>
-        )}
-
-        {/* Target & Assesmen */}
-        <div className="ml-4 mb-4 grid grid-cols-2 gap-4 text-sm">
-          <div><p className="font-semibold text-slate-200">Target Peserta Didik</p><p className="text-slate-300">{c.target_peserta_didik || ''}</p></div>
-          <div><p className="font-semibold text-slate-200">Jumlah Siswa</p><p className="text-slate-300">{c.jumlah_siswa || ''}</p></div>
-          {c.assesmen && (
-            <>
-              <div><p className="font-semibold text-slate-200">Asesmen</p><p className="text-slate-300">{Array.isArray(c.assesmen.jenis) ? c.assesmen.jenis.join(', ') : ''}</p></div>
-              <div><p className="font-semibold text-slate-200">Teknik</p><p className="text-slate-300">{Array.isArray(c.assesmen.teknik) ? c.assesmen.teknik.join(', ') : ''}</p></div>
-            </>
-          )}
-        </div>
-
-        {/* Model, Media, Materi, Sumber */}
-        {c.model_pembelajaran && (
-          <div className="ml-4 mb-4">
-            <p className="font-semibold text-sm text-slate-200">Model Pembelajaran</p>
-            <p className="text-sm text-slate-300 whitespace-pre-line">
-              {c.model_pembelajaran.kegiatan_utama ? `Kegiatan Utama: ${c.model_pembelajaran.kegiatan_utama}` : ''}
-              {c.model_pembelajaran.pengaturan ? `\nPengaturan: ${Array.isArray(c.model_pembelajaran.pengaturan) ? c.model_pembelajaran.pengaturan.join(', ') : c.model_pembelajaran.pengaturan}` : ''}
-              {c.model_pembelajaran.metode ? `\nMetode: ${Array.isArray(c.model_pembelajaran.metode) ? c.model_pembelajaran.metode.join(', ') : c.model_pembelajaran.metode}` : ''}
-            </p>
-          </div>
-        )}
-
-        {c.media_pembelajaran && (
-          <div className="ml-4 mb-4">
-            <p className="font-semibold text-sm text-slate-200">Media Pembelajaran</p>
-            <ol className="text-sm text-slate-300 list-decimal ml-5">
-              {Array.isArray(c.media_pembelajaran) ? c.media_pembelajaran.map((m: any, i: number) => <li key={i}>{m}</li>) : <li>{c.media_pembelajaran}</li>}
+          <div className="mb-4 ml-4">
+            <p className="font-semibold text-sm text-indigo-300 mb-1">B. Tujuan Pembelajaran</p>
+            <ol className="text-sm text-slate-200 list-decimal ml-5 space-y-0.5">
+              {Array.isArray(c.tujuan_pembelajaran) ? c.tujuan_pembelajaran.map((tp: any, i: number) => <li key={i}>{tp}</li>) : <li>{c.tujuan_pembelajaran}</li>}
             </ol>
           </div>
         )}
 
-        {c.materi_pembelajaran && (
-          <div className="ml-4 mb-4">
-            <p className="font-semibold text-sm text-slate-200">Materi Pembelajaran</p>
-            <ul className="text-sm text-slate-300 list-disc ml-5">
-              {Array.isArray(c.materi_pembelajaran) ? c.materi_pembelajaran.map((m: any, i: number) => <li key={i}>{m}</li>) : <li>{c.materi_pembelajaran}</li>}
+        {/* Pemahaman Bermakna */}
+        {c.pemahaman_bermakna && (
+          <div className="mb-4 ml-4">
+            <p className="font-semibold text-sm text-indigo-300 mb-1">C. Pemahaman Bermakna</p>
+            <ul className="text-sm text-slate-200 list-disc ml-5 space-y-0.5">
+              {Array.isArray(c.pemahaman_bermakna) ? c.pemahaman_bermakna.map((pb: any, i: number) => <li key={i}>{pb}</li>) : <li>{c.pemahaman_bermakna}</li>}
             </ul>
           </div>
         )}
 
-        {c.sumber_belajar && (
-          <div className="ml-4 mb-4">
-            <p className="font-semibold text-sm text-slate-200">Sumber Belajar</p>
-            {c.sumber_belajar.utama && (
-              <div className="mb-2">
-                <p className="text-xs text-slate-400">Sumber Utama:</p>
-                <ol className="text-sm text-slate-300 list-decimal ml-5">
-                  {Array.isArray(c.sumber_belajar.utama) ? c.sumber_belajar.utama.map((s: any, i: number) => <li key={i}>{s}</li>) : <li>{c.sumber_belajar.utama}</li>}
-                </ol>
-              </div>
-            )}
-            {c.sumber_belajar.alternatif && (
-              <div>
-                <p className="text-xs text-slate-400">Sumber Alternatif:</p>
-                <ol className="text-sm text-slate-300 list-decimal ml-5">
-                  {Array.isArray(c.sumber_belajar.alternatif) ? c.sumber_belajar.alternatif.map((s: any, i: number) => <li key={i}>{s}</li>) : <li>{c.sumber_belajar.alternatif}</li>}
-                </ol>
-              </div>
-            )}
+        {/* Pertanyaan Pemantik */}
+        {c.pertanyaan_pemantik && (
+          <div className="mb-4 ml-4">
+            <p className="font-semibold text-sm text-indigo-300 mb-1">D. Pertanyaan Pemantik</p>
+            <ul className="text-sm text-slate-200 list-disc ml-5 space-y-0.5">
+              {Array.isArray(c.pertanyaan_pemantik) ? c.pertanyaan_pemantik.map((pp: any, i: number) => <li key={i}>{pp}</li>) : <li>{c.pertanyaan_pemantik}</li>}
+            </ul>
           </div>
         )}
 
-        {/* Persiapan */}
-        {c.persiapan_pembelajaran && (
-          <div className="ml-4 mb-4">
-            <p className="font-semibold text-sm text-slate-200">Persiapan Pembelajaran</p>
-            <ol className="text-sm text-slate-300 list-decimal ml-5">
-              {Array.isArray(c.persiapan_pembelajaran) ? c.persiapan_pembelajaran.map((p: any, i: number) => <li key={i}>{p}</li>) : <li>{c.persiapan_pembelajaran}</li>}
-            </ol>
-          </div>
-        )}
-
-        {/* Langkah Kegiatan */}
-        {c.langkah_kegiatan && (
-          <div className="ml-4 mb-4">
-            <p className="font-semibold text-sm text-slate-200">Langkah-langkah Kegiatan Pembelajaran</p>
-            {Array.isArray(c.langkah_kegiatan) && c.langkah_kegiatan.map((pk: any, i: number) => (
+        {/* Kegiatan Pembelajaran */}
+        {c.kegiatan_pembelajaran && (
+          <div className="mb-4 ml-4">
+            <p className="font-semibold text-sm text-indigo-300 mb-1">E. Kegiatan Pembelajaran</p>
+            {Array.isArray(c.kegiatan_pembelajaran) && c.kegiatan_pembelajaran.map((k: any, i: number) => (
               <div key={i} className="mt-3 p-3 bg-slate-900/30 rounded-lg border border-slate-700/30">
-                <p className="font-medium text-sm text-indigo-300 mb-2">{pk.pertemuan || `Pertemuan ${i + 1}`}</p>
-                {pk.pendahuluan && <div><p className="text-xs font-medium text-slate-400">A. Pendahuluan</p><p className="text-sm text-slate-300 whitespace-pre-line mb-2">{pk.pendahuluan}</p></div>}
-                {pk.inti && <div><p className="text-xs font-medium text-slate-400">B. Kegiatan Inti</p><p className="text-sm text-slate-300 whitespace-pre-line mb-2">{pk.inti}</p></div>}
-                {pk.penutup && <div><p className="text-xs font-medium text-slate-400">C. Penutup</p><p className="text-sm text-slate-300 whitespace-pre-line">{pk.penutup}</p></div>}
+                <p className="font-medium text-sm text-indigo-300 mb-2">{k.pertemuan || `Pertemuan ${i + 1}`}</p>
+                {k.pendahuluan && <div><p className="text-xs font-medium text-slate-400">Pendahuluan</p><p className="text-sm text-slate-300 whitespace-pre-line mb-2">{k.pendahuluan}</p></div>}
+                {k.inti && <div><p className="text-xs font-medium text-slate-400">Kegiatan Inti</p><p className="text-sm text-slate-300 whitespace-pre-line mb-2">{k.inti}</p></div>}
+                {k.penutup && <div><p className="text-xs font-medium text-slate-400">Penutup</p><p className="text-sm text-slate-300 whitespace-pre-line">{k.penutup}</p></div>}
               </div>
             ))}
           </div>
         )}
 
-        {/* Strategi Alternatif */}
-        {c.strategi_alternatif && (
-          <div className="ml-4 mb-4">
-            <p className="font-semibold text-sm text-slate-200">Strategi Alternatif Pembelajaran</p>
-            {Array.isArray(c.strategi_alternatif) && c.strategi_alternatif.map((sa: any, i: number) => (
-              <div key={i} className="mt-2">
-                <p className="font-medium text-sm text-slate-200">{sa.judul || `Strategi ${i + 1}`}</p>
-                <p className="text-sm text-slate-300 whitespace-pre-line">{sa.isi || ''}</p>
-              </div>
-            ))}
+        {/* Asesmen */}
+        {c.asesmen && (
+          <div className="mb-4 ml-4">
+            <p className="font-semibold text-sm text-indigo-300 mb-1">F. Asesmen</p>
+            <div className="text-sm text-slate-200 space-y-1">
+              <p><span className="font-semibold text-slate-300">Jenis:</span> {Array.isArray(c.asesmen.jenis) ? c.asesmen.jenis.join(', ') : c.asesmen.jenis}</p>
+              <p><span className="font-semibold text-slate-300">Teknik:</span> {Array.isArray(c.asesmen.teknik) ? c.asesmen.teknik.join(', ') : c.asesmen.teknik}</p>
+            </div>
           </div>
         )}
 
-        {/* C. Lampiran */}
-        <p className="font-bold text-base text-indigo-300 mb-3 mt-6">C. LAMPIRAN</p>
+        {/* Pengayaan & Remedial */}
+        {c.pengayaan_remedial && (
+          <div className="mb-4 ml-4">
+            <p className="font-semibold text-sm text-indigo-300 mb-1">G. Pengayaan dan Remedial</p>
+            <div className="text-sm text-slate-200 space-y-1">
+              {c.pengayaan_remedial.pengayaan && <p><span className="font-semibold text-slate-300">Pengayaan:</span> {c.pengayaan_remedial.pengayaan}</p>}
+              {c.pengayaan_remedial.remedial && <p><span className="font-semibold text-slate-300">Remedial:</span> {c.pengayaan_remedial.remedial}</p>}
+            </div>
+          </div>
+        )}
 
+        {/* Refleksi */}
+        {c.refleksi && (
+          <div className="mb-4 ml-4">
+            <p className="font-semibold text-sm text-indigo-300 mb-1">H. Refleksi</p>
+            <div className="grid md:grid-cols-2 gap-3 text-sm">
+              {c.refleksi.guru && (
+                <div className="bg-slate-900/30 p-3 rounded-lg border border-slate-700/30">
+                  <p className="font-medium text-slate-300 mb-1">Refleksi Guru</p>
+                  <ul className="list-disc ml-4 text-slate-300 space-y-0.5">
+                    {Array.isArray(c.refleksi.guru) ? c.refleksi.guru.map((r: any, i: number) => <li key={i}>{r}</li>) : <li>{c.refleksi.guru}</li>}
+                  </ul>
+                </div>
+              )}
+              {c.refleksi.peserta_didik && (
+                <div className="bg-slate-900/30 p-3 rounded-lg border border-slate-700/30">
+                  <p className="font-medium text-slate-300 mb-1">Refleksi Peserta Didik</p>
+                  <ul className="list-disc ml-4 text-slate-300 space-y-0.5">
+                    {Array.isArray(c.refleksi.peserta_didik) ? c.refleksi.peserta_didik.map((r: any, i: number) => <li key={i}>{r}</li>) : <li>{c.refleksi.peserta_didik}</li>}
+                  </ul>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Lampiran */}
         {c.lampiran && (
-          <div className="ml-4 mb-4 space-y-4">
-            {c.lampiran.lkpd && (
-              <div>
-                <p className="font-semibold text-sm text-slate-200">Lembar Kerja Peserta Didik</p>
-                <p className="text-sm text-slate-300 whitespace-pre-line">{c.lampiran.lkpd}</p>
-              </div>
-            )}
-            {c.lampiran.bahan_bacaan && (
-              <div>
-                <p className="font-semibold text-sm text-slate-200">Bahan Bacaan Guru dan Peserta Didik</p>
-                <p className="text-sm text-slate-300 whitespace-pre-line">{c.lampiran.bahan_bacaan}</p>
-              </div>
-            )}
-            {c.lampiran.glosarium && (
-              <div>
-                <p className="font-semibold text-sm text-slate-200">Glosarium</p>
-                {Array.isArray(c.lampiran.glosarium) ? (
-                  <div className="grid grid-cols-2 gap-x-4 text-sm text-slate-300">
-                    {c.lampiran.glosarium.map((g: any, i: number) => (
-                      <p key={i}><span className="font-medium">{g.istilah || ''}</span>: {g.arti || ''}</p>
-                    ))}
+          <div className="mb-4 ml-4">
+            <p className="font-semibold text-sm text-indigo-300 mb-1">I. Lampiran</p>
+            <div className="space-y-3 text-sm">
+              {c.lampiran.lkpd && <div><p className="font-medium text-slate-300">LKPD</p><p className="text-slate-300 whitespace-pre-line">{c.lampiran.lkpd}</p></div>}
+              {c.lampiran.bahan_bacaan && <div><p className="font-medium text-slate-300">Bahan Bacaan</p><p className="text-slate-300 whitespace-pre-line">{c.lampiran.bahan_bacaan}</p></div>}
+              {c.lampiran.glosarium && Array.isArray(c.lampiran.glosarium) && (
+                <div><p className="font-medium text-slate-300">Glosarium</p>
+                  <div className="grid grid-cols-2 gap-x-4 text-slate-300">
+                    {c.lampiran.glosarium.map((g: any, i: number) => <p key={i}><span className="font-medium">{g.istilah}</span>: {g.definisi || g.arti}</p>)}
                   </div>
-                ) : <p className="text-sm text-slate-300 whitespace-pre-line">{c.lampiran.glosarium}</p>}
-              </div>
-            )}
-            {c.lampiran.daftar_pustaka && (
-              <div>
-                <p className="font-semibold text-sm text-slate-200">Daftar Pustaka</p>
-                <ol className="text-sm text-slate-300 list-decimal ml-5">
-                  {Array.isArray(c.lampiran.daftar_pustaka) ? c.lampiran.daftar_pustaka.map((dp: any, i: number) => <li key={i}>{dp}</li>) : <li>{c.lampiran.daftar_pustaka}</li>}
-                </ol>
-              </div>
-            )}
+                </div>
+              )}
+              {c.lampiran.daftar_pustaka && Array.isArray(c.lampiran.daftar_pustaka) && (
+                <div><p className="font-medium text-slate-300">Daftar Pustaka</p>
+                  <ol className="list-decimal ml-5 text-slate-300">{c.lampiran.daftar_pustaka.map((dp: any, i: number) => <li key={i}>{dp}</li>)}</ol>
+                </div>
+              )}
+            </div>
           </div>
         )}
 

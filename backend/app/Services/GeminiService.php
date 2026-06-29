@@ -219,13 +219,16 @@ FORMAT OUTPUT - Keluarkan HANYA JSON valid tanpa markdown:
         $instansi = $instansi ?: "SDN ...";
         $nama_penyusun = $nama_penyusun ?: '…………………';
 
-        return "Anda adalah guru profesional Indonesia. Buatlah MODUL AJAR KURIKULUM MERDEKA untuk:
+        return "Anda adalah guru profesional Indonesia. Buatlah MODUL AJAR KURIKULUM MERDEKA (TINGKAT SD) untuk:
 - Mata Pelajaran: {$mapel}
-- Kelas: {$kelas}
+- Kelas: {$kelas} SD
 - Semester: {$semester}
 - Fase: {$fase}
 - Materi: {$materi}
 - Alokasi Waktu: {$alokasi_waktu}
+- Nama Penyusun: {$nama_penyusun}
+- Instansi: {$instansi}
+- Tahun Pelajaran: {$tahun_pelajaran}
 
 Buat konten yang DETAIL, PANJANG, dan LENGKAP sesuai format berikut.
 
@@ -235,123 +238,68 @@ Keluarkan HANYA JSON valid tanpa markdown, dengan struktur:
   \"informasi_umum\": {
     \"nama_penyusun\": \"{$nama_penyusun}\",
     \"instansi\": \"{$instansi}\",
-    \"jenjang_kelas\": \"SD / {$kelas}\",
-    \"alokasi_waktu\": \"{$alokasi_waktu}\",
-    \"tahun_pelajaran\": \"{$tahun_pelajaran}\"
+    \"tahun_penyusunan\": \"...\",
+    \"jenjang_sekolah\": \"Sekolah Dasar (SD)\",
+    \"mata_pelajaran\": \"{$mapel}\",
+    \"fase_kelas\": \"Fase {$fase} / Kelas {$kelas}\",
+    \"bab_tema\": \"{$materi}\",
+    \"alokasi_waktu\": \"{$alokasi_waktu}\"
+  },
+  \"profil_pelajar_pancasila\": {
+    \"deskripsi\": \"... (deskripsi profil yang dipilih) ...\",
+    \"pilihan\": [
+      { \"label\": \"Beriman, bertakwa kepada Tuhan YME, dan berakhlak mulia\", \"terpilih\": true, \"sub_elemen\": \"...\" },
+      { \"label\": \"Berkebinekaan global\", \"terpilih\": false, \"sub_elemen\": \"\" },
+      { \"label\": \"Gotong royong\", \"terpilih\": true, \"sub_elemen\": \"...\" },
+      { \"label\": \"Mandiri\", \"terpilih\": false, \"sub_elemen\": \"\" },
+      { \"label\": \"Bernalar kritis\", \"terpilih\": true, \"sub_elemen\": \"...\" },
+      { \"label\": \"Kreatif\", \"terpilih\": false, \"sub_elemen\": \"\" }
+    ]
+  },
+  \"sarana_prasarana\": {
+    \"media_pembelajaran\": [ \"Laptop\", \"Proyektor\", \"...\" ],
+    \"sumber_belajar\": [ \"Buku Siswa Kemendikbudristek Kelas {$kelas}\", \"...\" ]
+  },
+  \"target_peserta_didik\": {
+    \"reguler\": true,
+    \"pencapaian_tinggi\": false,
+    \"kesulitan_belajar\": false
+  },
+  \"model_metode\": {
+    \"model_pembelajaran\": \"...\",
+    \"metode\": [ \"...\", \"...\" ]
   },
   \"capaian_pembelajaran\": {
     \"fase\": \"{$fase}\",
-    \"deskripsi\": \"... (deskripsi Capaian Pembelajaran fase ini sesuai mapel) ...\",
-    \"elemen\": \"... (elemen CP sesuai mapel) ...\",
-    \"cp_berdasar_elemen\": \"... (capaian pembelajaran berdasar elemen) ...\"
+    \"cp_text\": \"... (teks Capaian Pembelajaran resmi) ...\"
   },
   \"tujuan_pembelajaran\": [ \"...\", \"...\" ],
-  \"profil_pelajar_pancasila\": {
-    \"deskripsi\": \"...\",
-    \"elemen\": [
-      { \"elemen\": \"Beriman, Bertakwa...\", \"sub_elemen\": \"...\" },
-      { \"elemen\": \"Mandiri\", \"sub_elemen\": \"...\" },
-      { \"elemen\": \"Bernalar Kritis\", \"sub_elemen\": \"...\" },
-      { \"elemen\": \"Bergotong Royong\", \"sub_elemen\": \"...\" },
-      { \"elemen\": \"Berkebinekaan Global\", \"sub_elemen\": \"...\" },
-      { \"elemen\": \"Kreatif\", \"sub_elemen\": \"...\" }
-    ]
-  },
-  \"profil_lulusan\": [
-    { \"nama\": \"Keimanan dan Ketakwaan\", \"deskripsi\": \"...\" },
-    { \"nama\": \"Kewargaan\", \"deskripsi\": \"...\" },
-    { \"nama\": \"Penalaran Kritis\", \"deskripsi\": \"...\" },
-    { \"nama\": \"Kreativitas\", \"deskripsi\": \"...\" },
-    { \"nama\": \"Kolaborasi\", \"deskripsi\": \"...\" },
-    { \"nama\": \"Kemandirian\", \"deskripsi\": \"...\" },
-    { \"nama\": \"Kesehatan\", \"deskripsi\": \"...\" },
-    { \"nama\": \"Komunikasi\", \"deskripsi\": \"...\" }
-  ],
-  \"kata_kunci\": [ \"...\", \"...\" ],
-  \"prasyarat\": \"... (konsep dan keterampilan prasyarat) ...\",
-  \"target_peserta_didik\": \"Peserta didik Reguler\",
-  \"jumlah_siswa\": \"30 Peserta didik\",
-  \"assesmen\": {
-    \"jenis\": [\"Asesmen individu\", \"Asesmen kelompok\"],
-    \"teknik\": [\"Presentasi\", \"Produk\", \"Tertulis\", \"Unjuk Kerja\"]
-  },
-  \"model_pembelajaran\": {
-    \"kegiatan_utama\": \"Tatap muka\",
-    \"pengaturan\": [\"Individu\", \"Berkelompok\"],
-    \"metode\": [\"Cooperative learning\", \"Pengamatan bercerita\", \"Membaca\", \"Tanya jawab\", \"Diskusi\", \"Games dan penugasan\"]
-  },
-  \"ketersediaan_materi\": {
-    \"pengayaan\": \"YA\",
-    \"alternatif\": \"YA\"
-  },
-  \"media_pembelajaran\": [ \"...\", \"...\" ],
-  \"materi_pembelajaran\": [ \"...\", \"...\" ],
-  \"sumber_belajar\": {
-    \"utama\": [ \"...\", \"...\" ],
-    \"alternatif\": [ \"...\", \"...\" ]
-  },
-  \"persiapan_pembelajaran\": [ \"...\", \"...\" ],
-  \"langkah_kegiatan\": [
+  \"pemahaman_bermakna\": [ \"...\", \"...\" ],
+  \"pertanyaan_pemantik\": [ \"...\", \"...\" ],
+  \"kegiatan_pembelajaran\": [
     {
-      \"pertemuan\": \"Pertemuan 1-2: ...\",
-      \"pendahuluan\": \"... (15 Menit)\\n1. ...\\n2. ...\\n3. ...\",
-      \"inti\": \"... (90 Menit)\\nMindful Learning:\\n...\\n\\nJoyful Learning:\\n...\\n\\nMeaningful Learning:\\n...\",
-      \"penutup\": \"... (15 Menit)\\n1. ...\\n2. ...\\n3. ...\"
-    },
-    {
-      \"pertemuan\": \"Pertemuan 3-4: ...\",
-      \"pendahuluan\": \"...\",
-      \"inti\": \"...\",
-      \"penutup\": \"...\"
+      \"pertemuan\": \"Pertemuan 1\",
+      \"pendahuluan\": \"...(15 Menit)...\\n1. ...\\n2. ...\\n3. ...\",
+      \"inti\": \"...(60 Menit)...\\nLangkah 1: ...\\nLangkah 2: ...\\nLangkah 3: ...\",
+      \"penutup\": \"...(15 Menit)...\\n1. ...\\n2. ...\"
     }
   ],
-  \"strategi_alternatif\": [
-    { \"judul\": \"Strategi Alternatif Pembelajaran 1\", \"isi\": \"...\" },
-    { \"judul\": \"Strategi Alternatif Pembelajaran 2\", \"isi\": \"...\" }
-  ],
-  \"rubrik_penilaian\": [
-    {
-      \"judul\": \"Rubrik Penilaian Presentasi\",
-      \"kriteria\": [
-        { \"nama\": \"Penampilan\", \"skor4\": \"...\", \"skor3\": \"...\", \"skor2\": \"...\", \"skor1\": \"...\" }
-      ]
-    },
-    {
-      \"judul\": \"Rubrik Penilaian Proyek\",
-      \"kriteria\": []
-    },
-    {
-      \"judul\": \"Rubrik Diskusi Kelompok\",
-      \"kriteria\": []
-    },
-    {
-      \"judul\": \"Rubrik Mewarnai\",
-      \"kriteria\": []
-    }
-  ],
-  \"refleksi_guru\": {
-    \"deskripsi\": \"...\",
-    \"tabel_aspek\": [\"Perencanaan\", \"Pelaksanaan\", \"Penilaian\"],
-    \"pertanyaan\": [\"Apa yang menurut guru berhasil?\", \"Kesulitan apa yang dialami guru?\", \"Apa langkah yang perlu dilakukan untuk memperbaiki proses belajar?\", \"Apakah seluruh peserta didik mengikuti pelajaran dengan baik?\"]
+  \"asesmen\": {
+    \"jenis\": [ \"Asesmen Individu\", \"Asesmen Kelompok\" ],
+    \"teknik\": [ \"Tertulis\", \"Unjuk Kerja\", \"Produk\", \"Observasi\" ]
   },
-  \"refleksi_peserta_didik\": [
-    \"Saya tidak memaksakan kehendak pada orang lain\",
-    \"Saya sudah membantu teman yang membutuhkan\",
-    \"Saya sudah bermain dengan semua teman\",
-    \"Saya sudah bisa menghargai pendapat teman\",
-    \"Saya sudah bersikap adil dengan sesama\",
-    \"Saya sudah memiliki semangat persatuan dan kesatuan\",
-    \"Saya sudah meneladani sikap rela berkorban\",
-    \"Saya sudah mengutamakan kepentingan bersama daripada pribadi\"
-  ],
   \"pengayaan_remedial\": {
     \"pengayaan\": \"...\",
     \"remedial\": \"...\"
   },
+  \"refleksi\": {
+    \"guru\": [ \"...\", \"...\" ],
+    \"peserta_didik\": [ \"...\", \"...\" ]
+  },
   \"lampiran\": {
-    \"lkpd\": \"... (LKPD lengkap dengan petunjuk, soal, dan kegiatan Mindful/Joyful/Meaningful Learning) ...\",
-    \"bahan_bacaan\": \"... (materi bahan bacaan untuk guru dan peserta didik) ...\",
-    \"glosarium\": [ {\"istilah\": \"...\", \"arti\": \"...\"} ],
+    \"lkpd\": \"...\",
+    \"bahan_bacaan\": \"...\",
+    \"glosarium\": [ {\"istilah\": \"...\", \"definisi\": \"...\"} ],
     \"daftar_pustaka\": [ \"...\", \"...\" ]
   }
 }";
